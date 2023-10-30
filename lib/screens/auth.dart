@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -10,11 +13,50 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  var _enteredEmail = '';
+  var _enteredPassword = '';
   var _selectedUserType = '';
   var _isSelected = false;
   var _isLogin = true;
+  var _isRegister = false;
+  var _isAuthenticating = false;
 
-  void _submit() {}
+  void _submit() async {
+    final isValid = _formKey.currentState!.validate();
+
+    if (!isValid) {
+      return;
+    }
+
+    _formKey.currentState!.save();
+    //thanks to save(), special function can be assigned to all TextFormFields. write function to onSaved parameter
+
+    try {
+      setState(() {
+        _isAuthenticating = true;
+      });
+      if (_isLogin) {
+        final userCredentials = await _firebase.signInWithEmailAndPassword(
+            email: _enteredEmail, password: _enteredPassword);
+      } else {
+        final userCredentials = await _firebase.createUserWithEmailAndPassword(
+            email: _enteredEmail, password: _enteredPassword);
+      }
+    } on FirebaseAuthException catch (error) {
+      if (error.code == 'email-already-in-use') {}
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Authentication failed.'),
+        ),
+      );
+      setState(() {
+        _isAuthenticating = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +67,14 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (_isLogin)
+              if (_isLogin || _isRegister)
                 Card(
                   margin: const EdgeInsets.all(20),
                   child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Form(
+                        key: _formKey,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -42,39 +85,67 @@ class _AuthScreenState extends State<AuthScreen> {
                               keyboardType: TextInputType.emailAddress,
                               autocorrect: false,
                               textCapitalization: TextCapitalization.none,
-                              //validator: () {},
-                              //onSaved: () {},
+                              validator: (value) {
+                                if (value == null ||
+                                    value.trim().isEmpty ||
+                                    !value.contains('@')) {
+                                  return 'Please enter a valid email address';
+                                }
+
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _enteredEmail = value!;
+                                //we know that value is not null because we validate it
+                              },
                             ),
                             const SizedBox(height: 12),
                             TextFormField(
                               decoration: const InputDecoration(
                                 labelText: 'Password',
                               ),
+                              enableSuggestions: false,
                               obscureText: true,
-                              //validator: () {},
-                              //onSaved: () {},
+                              validator: (value) {
+                                if (value == null ||
+                                    value.trim().isEmpty ||
+                                    value.trim().length < 6) {
+                                  return 'Password must be at least 6 characters long.';
+                                }
+
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _enteredPassword = value!;
+                              },
                             ),
                             const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: _submit,
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.black,
-                                backgroundColor:
-                                    const Color.fromARGB(255, 102, 252, 241),
+                            if (_isAuthenticating)
+                              const CircularProgressIndicator(),
+                            if (!_isAuthenticating)
+                              ElevatedButton(
+                                onPressed: _submit,
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.black,
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 102, 252, 241),
+                                ),
+                                child: Text(_isLogin ? 'Login' : 'Signup'),
                               ),
-                              child: Text(_isLogin ? 'Login' : 'Signup'),
-                            ),
                             const SizedBox(height: 12),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isLogin = !_isLogin;
-                                });
-                              },
-                              child: Text(_isLogin
-                                  ? 'Create an account'
-                                  : 'I already have an acoount'),
-                            ),
+                            if (!_isAuthenticating)
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isLogin = !_isLogin;
+                                    _isRegister = false;
+                                    _isSelected = false;
+                                  });
+                                },
+                                child: Text(_isLogin
+                                    ? 'Create an account'
+                                    : 'I already have an acoount'),
+                              ),
                           ],
                         ),
                       ),
@@ -103,6 +174,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           onPressed: () {
                             setState(() {
                               _isSelected = true;
+                              _isRegister = true;
                               _selectedUserType = 'Driver';
                             });
                           },
@@ -120,6 +192,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           onPressed: () {
                             setState(() {
                               _isSelected = true;
+                              _isRegister = true;
                               _selectedUserType = 'Payloader';
                             });
                           },
@@ -133,63 +206,6 @@ class _AuthScreenState extends State<AuthScreen> {
                           child: const Text('Payloader'),
                         ),
                       ],
-                    ),
-                  ),
-                ),
-              if (!_isLogin && _isSelected)
-                Card(
-                  margin: const EdgeInsets.all(20),
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Form(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextFormField(
-                              decoration: const InputDecoration(
-                                labelText: 'Email Address',
-                              ),
-                              keyboardType: TextInputType.emailAddress,
-                              autocorrect: false,
-                              textCapitalization: TextCapitalization.none,
-                              //validator: () {},
-                              //onSaved: () {},
-                            ),
-                            const SizedBox(height: 12),
-                            TextFormField(
-                              decoration: const InputDecoration(
-                                labelText: 'Password',
-                              ),
-                              obscureText: true,
-                              //validator: () {},
-                              //onSaved: () {},
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: _submit,
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.black,
-                                backgroundColor:
-                                    const Color.fromARGB(255, 102, 252, 241),
-                              ),
-                              child: Text(_isLogin ? 'Login' : 'Signup'),
-                            ),
-                            const SizedBox(height: 12),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isLogin = !_isLogin;
-                                  _isSelected = false;
-                                });
-                              },
-                              child: Text(_isLogin
-                                  ? 'Create an account'
-                                  : 'I already have an acoount'),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                   ),
                 ),

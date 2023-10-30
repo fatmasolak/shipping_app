@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "869883435644",
+    "project_id": "shipping-project-b8f96",
+    "storage_bucket": "shipping-project-b8f96.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:869883435644:android:cf4b451d894d69e83e47f9",
+        "android_client_info": {
+          "package_name": "com.example.shipping_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKEcbCltfhPVCo3N2BS-sN9j6NF0MeMb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
