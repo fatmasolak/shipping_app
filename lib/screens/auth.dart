@@ -1,7 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
+import 'package:shipping_app/models/driver.dart';
 import 'package:shipping_app/models/payloader.dart';
+
+import 'package:shipping_app/screens/driver_credentials.dart';
 import 'package:shipping_app/screens/payloader_credentials.dart';
 
 final _firebase = FirebaseAuth.instance;
@@ -26,6 +33,14 @@ class _AuthScreenState extends State<AuthScreen> {
     companyEmail: '',
   );
 
+  Driver driver = Driver(
+    name: '',
+    surname: '',
+    phone: '',
+    expireDateOfLicence: '',
+    driverLicence: File(''),
+  );
+
   var _enteredEmail = '';
   var _enteredPassword = '';
   var _selectedUserType = '';
@@ -45,16 +60,32 @@ class _AuthScreenState extends State<AuthScreen> {
     _formKey.currentState!.save();
     //thanks to save(), special function can be assigned to all TextFormFields. write function to onSaved parameter
 
-    if (payloader.name == '' ||
-        payloader.surname == '' ||
-        payloader.phone == '' ||
-        payloader.companyName == '' ||
-        payloader.companyEmail == '') {
-      //if the user tries to register without giving extra information
-      setState(() {
-        _isLogin = true;
-        _isSelected = false;
-      });
+    if (_selectedUserType == 'Payloader') {
+      if (payloader.name == '' ||
+          payloader.surname == '' ||
+          payloader.phone == '' ||
+          payloader.companyName == '' ||
+          payloader.companyEmail == '') {
+        //if the user tries to register without giving extra information
+        setState(() {
+          _isLogin = true;
+          _isSelected = false;
+        });
+      }
+    }
+
+    if (_selectedUserType == 'Driver') {
+      if (driver.name == '' ||
+          driver.surname == '' ||
+          driver.phone == '' ||
+          driver.expireDateOfLicence == '' ||
+          driver.driverLicence == File('')) {
+        //if the user tries to register without giving extra information
+        setState(() {
+          _isLogin = true;
+          _isSelected = false;
+        });
+      }
     }
 
     try {
@@ -69,18 +100,44 @@ class _AuthScreenState extends State<AuthScreen> {
         final userCredentials = await _firebase.createUserWithEmailAndPassword(
             email: _enteredEmail, password: _enteredPassword);
 
-        await FirebaseFirestore.instance
-            .collection('payloader')
-            .doc(_firebase.currentUser!.uid)
-            .set({
-          'userId': _firebase.currentUser!.uid,
-          'email': _firebase.currentUser!.email!,
-          'name': payloader.name,
-          'surname': payloader.surname,
-          'phone': payloader.phone,
-          'companyName': payloader.companyName,
-          'companyEmail': payloader.companyEmail,
-        });
+        if (_selectedUserType == 'Payloader') {
+          await FirebaseFirestore.instance
+              .collection('payloader')
+              .doc(_firebase.currentUser!.uid)
+              .set({
+            'userId': _firebase.currentUser!.uid,
+            'email': _firebase.currentUser!.email!,
+            'name': payloader.name,
+            'surname': payloader.surname,
+            'phone': payloader.phone,
+            'companyName': payloader.companyName,
+            'companyEmail': payloader.companyEmail,
+          });
+        }
+
+        if (_selectedUserType == 'Driver') {
+          final storageRef = FirebaseStorage.instance
+              .ref()
+              .child('driver_licence_images')
+              .child('${userCredentials.user!.uid}.jpg');
+
+          await storageRef.putFile(driver.driverLicence);
+
+          final driverLicenceUrl = await storageRef.getDownloadURL();
+
+          await FirebaseFirestore.instance
+              .collection('driver')
+              .doc(_firebase.currentUser!.uid)
+              .set({
+            'userId': _firebase.currentUser!.uid,
+            'email': _firebase.currentUser!.email!,
+            'name': driver.name,
+            'surname': driver.surname,
+            'phone': driver.phone,
+            'expireDateOfLicence': driver.expireDateOfLicence,
+            'driverLicence': driverLicenceUrl,
+          });
+        }
       }
     } on FirebaseAuthException catch (error) {
       //if (error.code == 'email-already-in-use') {}
@@ -217,6 +274,8 @@ class _AuthScreenState extends State<AuthScreen> {
                               _isRegister = true;
                               _selectedUserType = 'Driver';
                             });
+
+                            _awaitReturnDriverValue(context);
                           },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
@@ -236,7 +295,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               _selectedUserType = 'Payloader';
                             });
 
-                            _awaitReturnValue(context);
+                            _awaitReturnPayloaderValue(context);
                           },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
@@ -258,7 +317,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  void _awaitReturnValue(BuildContext context) async {
+  void _awaitReturnPayloaderValue(BuildContext context) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -268,6 +327,19 @@ class _AuthScreenState extends State<AuthScreen> {
 
     setState(() {
       payloader = result;
+    });
+  }
+
+  void _awaitReturnDriverValue(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const DriverCredentials(),
+      ),
+    );
+
+    setState(() {
+      driver = result;
     });
   }
 }

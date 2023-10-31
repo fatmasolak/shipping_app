@@ -1,31 +1,32 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:shipping_app/models/payloader.dart';
 
-class PayloaderCredentials extends StatefulWidget {
-  const PayloaderCredentials({
-    super.key,
-  });
+import 'package:shipping_app/models/driver.dart';
+import 'package:shipping_app/widgets/user_image_picker.dart';
+
+class DriverCredentials extends StatefulWidget {
+  const DriverCredentials({super.key});
 
   @override
-  State<PayloaderCredentials> createState() {
-    return _PayloaderCredentialsState();
+  State<DriverCredentials> createState() {
+    return _DriverCredentialsState();
   }
 }
 
-class _PayloaderCredentialsState extends State<PayloaderCredentials> {
+class _DriverCredentialsState extends State<DriverCredentials> {
   final _formKey = GlobalKey<FormState>();
 
   var _enteredName = '';
   var _enteredSurname = '';
   var _enteredPhone = '';
-  var _enteredCompanyName = '';
-  var _enteredCompanyEmail = '';
-  Payloader payloader = const Payloader(
+  var _expireDateOfLicence = '';
+  File _driverLicenceImage = File('');
+  Driver driver = Driver(
     name: '',
     surname: '',
     phone: '',
-    companyName: '',
-    companyEmail: '',
+    expireDateOfLicence: '',
+    driverLicence: File(''),
   );
 
   void _save() async {
@@ -38,16 +39,16 @@ class _PayloaderCredentialsState extends State<PayloaderCredentials> {
     _formKey.currentState!.save();
 
     setState(() {
-      payloader = Payloader(
+      driver = Driver(
         name: _enteredName,
         surname: _enteredSurname,
         phone: _enteredPhone,
-        companyName: _enteredCompanyName,
-        companyEmail: _enteredCompanyEmail,
+        expireDateOfLicence: _expireDateOfLicence,
+        driverLicence: _driverLicenceImage,
       );
     });
 
-    Navigator.pop(context, payloader);
+    Navigator.pop(context, driver);
   }
 
   @override
@@ -55,7 +56,7 @@ class _PayloaderCredentialsState extends State<PayloaderCredentials> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 31, 40, 51),
       appBar: AppBar(
-        title: const Text('Payloader Credentials'),
+        title: const Text('Driver Credentials'),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -134,41 +135,24 @@ class _PayloaderCredentialsState extends State<PayloaderCredentials> {
                           decoration: const InputDecoration(
                             labelStyle: TextStyle(
                                 color: Color.fromARGB(255, 225, 226, 228)),
-                            labelText: 'Company Name',
+                            labelText: 'Expire Date Of Driver Licence',
                           ),
+                          keyboardType: TextInputType.datetime,
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Please enter your company name';
+                              return 'Please enter your expire date of driver licence';
                             }
 
                             return null;
                           },
                           onSaved: (value) {
-                            _enteredCompanyName = value!;
+                            _expireDateOfLicence = value!;
                           },
                         ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          style: const TextStyle(color: Colors.white),
-                          decoration: const InputDecoration(
-                            labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 225, 226, 228)),
-                            labelText: 'Company Email',
-                          ),
-                          keyboardType: TextInputType.emailAddress,
-                          autocorrect: false,
-                          textCapitalization: TextCapitalization.none,
-                          validator: (value) {
-                            if (value == null ||
-                                value.trim().isEmpty ||
-                                !value.contains('@')) {
-                              return 'Please enter a valid email address';
-                            }
-
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _enteredCompanyEmail = value!;
+                        const SizedBox(height: 20),
+                        UserImagePicker(
+                          onPickImage: (pickedImage) {
+                            _driverLicenceImage = pickedImage;
                           },
                         ),
                         const SizedBox(height: 20),
