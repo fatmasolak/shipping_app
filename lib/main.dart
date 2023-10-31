@@ -1,10 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shipping_app/screens/auth.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:shipping_app/screens/payloader_credentials.dart';
-import 'package:shipping_app/screens/splash.dart';
 import 'firebase_options.dart';
+
+import 'package:shipping_app/screens/logged_in.dart';
+import 'package:shipping_app/screens/auth.dart';
+import 'package:shipping_app/screens/splash.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +37,7 @@ class App extends StatelessWidget {
           }
 
           if (snapshot.hasData) {
-            return const PayloaderCredentialsScreen();
+            return const LoggedInScreen();
           }
 
           return const AuthScreen();

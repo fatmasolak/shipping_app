@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shipping_app/models/payloader.dart';
+import 'package:shipping_app/screens/payloader_credentials.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -15,6 +18,14 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  Payloader payloader = const Payloader(
+    name: '',
+    surname: '',
+    phone: '',
+    companyName: '',
+    companyEmail: '',
+  );
+
   var _enteredEmail = '';
   var _enteredPassword = '';
   var _selectedUserType = '';
@@ -27,15 +38,29 @@ class _AuthScreenState extends State<AuthScreen> {
     final isValid = _formKey.currentState!.validate();
 
     if (!isValid) {
+      //to prevent sending and executing invalid data
       return;
     }
 
     _formKey.currentState!.save();
     //thanks to save(), special function can be assigned to all TextFormFields. write function to onSaved parameter
 
+    if (payloader.name == '' ||
+        payloader.surname == '' ||
+        payloader.phone == '' ||
+        payloader.companyName == '' ||
+        payloader.companyEmail == '') {
+      //if the user tries to register without giving extra information
+      setState(() {
+        _isLogin = true;
+        _isSelected = false;
+      });
+    }
+
     try {
       setState(() {
         _isAuthenticating = true;
+        _isRegister = false;
       });
       if (_isLogin) {
         final userCredentials = await _firebase.signInWithEmailAndPassword(
@@ -43,14 +68,28 @@ class _AuthScreenState extends State<AuthScreen> {
       } else {
         final userCredentials = await _firebase.createUserWithEmailAndPassword(
             email: _enteredEmail, password: _enteredPassword);
+
+        await FirebaseFirestore.instance
+            .collection('payloader')
+            .doc(_firebase.currentUser!.uid)
+            .set({
+          'userId': _firebase.currentUser!.uid,
+          'email': _firebase.currentUser!.email!,
+          'name': payloader.name,
+          'surname': payloader.surname,
+          'phone': payloader.phone,
+          'companyName': payloader.companyName,
+          'companyEmail': payloader.companyEmail,
+        });
       }
     } on FirebaseAuthException catch (error) {
-      if (error.code == 'email-already-in-use') {}
+      //if (error.code == 'email-already-in-use') {}
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(error.message ?? 'Authentication failed.'),
         ),
+        //snackbar appears at the bottom of the screen then disappears automatically
       );
       setState(() {
         _isAuthenticating = false;
@@ -60,6 +99,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isSelected && _selectedUserType == 'Payloader' && !_isRegister) {}
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 31, 40, 51),
       body: Center(
@@ -195,6 +235,8 @@ class _AuthScreenState extends State<AuthScreen> {
                               _isRegister = true;
                               _selectedUserType = 'Payloader';
                             });
+
+                            _awaitReturnValue(context);
                           },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
@@ -214,5 +256,18 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
+  }
+
+  void _awaitReturnValue(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const PayloaderCredentials(),
+      ),
+    );
+
+    setState(() {
+      payloader = result;
+    });
   }
 }
