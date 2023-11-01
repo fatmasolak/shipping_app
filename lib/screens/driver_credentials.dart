@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
+import 'package:flutter/cupertino.dart';
+
 import 'package:shipping_app/models/driver.dart';
 import 'package:shipping_app/widgets/user_image_picker.dart';
 
@@ -16,6 +18,7 @@ class DriverCredentials extends StatefulWidget {
 class _DriverCredentialsState extends State<DriverCredentials> {
   final _formKey = GlobalKey<FormState>();
 
+  var _pickedDate = '';
   var _enteredName = '';
   var _enteredSurname = '';
   var _enteredPhone = '';
@@ -39,6 +42,8 @@ class _DriverCredentialsState extends State<DriverCredentials> {
     _formKey.currentState!.save();
 
     setState(() {
+      _expireDateOfLicence = _pickedDate;
+
       driver = Driver(
         name: _enteredName,
         surname: _enteredSurname,
@@ -129,25 +134,60 @@ class _DriverCredentialsState extends State<DriverCredentials> {
                             _enteredPhone = value!;
                           },
                         ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          style: const TextStyle(color: Colors.white),
-                          decoration: const InputDecoration(
-                            labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 225, 226, 228)),
-                            labelText: 'Expire Date Of Driver Licence',
+                        const SizedBox(height: 40),
+                        const Text(
+                          'Expire Date of Driver Licence',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 225, 226, 228),
+                            fontSize: 14.5,
                           ),
-                          keyboardType: TextInputType.datetime,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Please enter your expire date of driver licence';
-                            }
-
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _expireDateOfLicence = value!;
-                          },
+                        ),
+                        const SizedBox(height: 5),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 100),
+                          child: Row(
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(2023),
+                                    lastDate: DateTime(2101),
+                                  ).then((selectedDate) {
+                                    if (selectedDate != null) {
+                                      setState(() {
+                                        _pickedDate =
+                                            "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+                                      });
+                                    }
+                                  });
+                                },
+                                child: const Text(
+                                  'Pick Date',
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 102, 252, 241),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 100,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    _pickedDate,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      color: Color.fromARGB(255, 225, 226, 228),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 20),
                         UserImagePicker(
