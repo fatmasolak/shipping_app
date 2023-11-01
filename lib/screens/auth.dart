@@ -71,6 +71,7 @@ class _AuthScreenState extends State<AuthScreen> {
           _isLogin = true;
           _isSelected = false;
         });
+        return;
       }
     }
 
@@ -85,6 +86,7 @@ class _AuthScreenState extends State<AuthScreen> {
           _isLogin = true;
           _isSelected = false;
         });
+        return;
       }
     }
 
@@ -150,6 +152,7 @@ class _AuthScreenState extends State<AuthScreen> {
       );
       setState(() {
         _isAuthenticating = false;
+        _isRegister = true;
       });
     }
   }
