@@ -65,6 +65,9 @@ class _CreateAdState extends State<CreateAd> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: const IconThemeData(
+          color: Colors.white, //change your color here
+        ),
         backgroundColor: const Color.fromARGB(255, 31, 40, 51),
         title: const Text(
           'Create New Ad',

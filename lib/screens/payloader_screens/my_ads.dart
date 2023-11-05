@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:shipping_app/models/ad.dart';
+import 'package:shipping_app/screens/payloader_screens/ad_details.dart';
 
 class MyAds extends StatefulWidget {
   const MyAds({super.key});
@@ -236,7 +237,16 @@ class _MyAdsState extends State<MyAds> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AdDetails(
+                                        ad: _myAds[index],
+                                      ),
+                                    ),
+                                  );
+                                },
                                 child: const Text('details',
                                     style: TextStyle(fontSize: 12)),
                               ),
