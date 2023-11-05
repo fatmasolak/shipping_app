@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 //The idea behind this screen  simply is to use it as a loading screen whilst
 //Firebase is figuring out whether we have a token or not
 
-class LoggedInScreen extends StatelessWidget {
-  const LoggedInScreen({super.key});
+class DriverLoggedInScreen extends StatelessWidget {
+  const DriverLoggedInScreen({super.key});
 
   @override
   Widget build(context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 31, 40, 51),
       appBar: AppBar(
-        title: const Text('FlutterChat'),
+        title: const Text('Shipping'),
         actions: [
           IconButton(
             onPressed: () {
@@ -25,7 +26,10 @@ class LoggedInScreen extends StatelessWidget {
         ],
       ),
       body: const Center(
-        child: Text('Logged in'),
+        child: Text(
+          'Driver Logged in',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }

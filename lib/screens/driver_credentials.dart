@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-import 'package:flutter/cupertino.dart';
-
 import 'package:shipping_app/models/driver.dart';
 import 'package:shipping_app/widgets/user_image_picker.dart';
 

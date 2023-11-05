@@ -12,6 +12,21 @@ import 'package:shipping_app/screens/driver_credentials.dart';
 import 'package:shipping_app/screens/payloader_credentials.dart';
 
 final _firebase = FirebaseAuth.instance;
+final _firestore = FirebaseFirestore.instance;
+
+Future<String> getUserType() async {
+  //determine the userType of logged in user
+  final userData = await _firestore
+      .collection('payloader')
+      .doc(_firebase.currentUser!.uid)
+      .get();
+
+  if (userData.exists) {
+    return 'Payloader';
+  }
+
+  return 'Driver';
+}
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -107,6 +122,7 @@ class _AuthScreenState extends State<AuthScreen> {
               .collection('payloader')
               .doc(_firebase.currentUser!.uid)
               .set({
+            'userType': _selectedUserType,
             'userId': _firebase.currentUser!.uid,
             'email': _firebase.currentUser!.email!,
             'name': payloader.name,
@@ -131,6 +147,7 @@ class _AuthScreenState extends State<AuthScreen> {
               .collection('driver')
               .doc(_firebase.currentUser!.uid)
               .set({
+            'userType': _selectedUserType,
             'userId': _firebase.currentUser!.uid,
             'email': _firebase.currentUser!.email!,
             'name': driver.name,
@@ -159,7 +176,6 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isSelected && _selectedUserType == 'Payloader' && !_isRegister) {}
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 31, 40, 51),
       body: Center(
