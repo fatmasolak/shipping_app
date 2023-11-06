@@ -1,74 +1,41 @@
-import 'package:flutter/material.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:shipping_app/models/ad.dart';
-import 'package:shipping_app/models/offer.dart';
-import 'package:shipping_app/widgets/create_offer.dart';
+class CreateOffer extends StatefulWidget {
+  const CreateOffer({super.key, required this.driverId});
 
-class AdDetails extends StatefulWidget {
-  const AdDetails({super.key, required this.ad});
-
-  final Ad ad;
+  final String driverId;
 
   @override
-  State<AdDetails> createState() => _AdDetailsState();
+  State<CreateOffer> createState() => _CreateOfferState(driverId);
 }
 
-class _AdDetailsState extends State<AdDetails> {
-  List<Offer> _myOffers = [];
+class _CreateOfferState extends State<CreateOffer> {
+  final String driverId;
   String _driverName = '';
   String _driverSurname = '';
   String _driverPhone = '';
   String _driverExpireDateOfLicence = '';
   String _driverLicenceLink = '';
-  bool isDriver = false;
-  bool isOffered = false;
+  bool _isOffered = false;
+
+  _CreateOfferState(this.driverId);
 
   @override
   void initState() {
     super.initState();
-    _isDriver();
-    _isOffered();
-    _loadOffers();
+    _loadDriverCredentials();
   }
 
-  void _isOffered() async {
+  void _loadDriverCredentials() async {
+    String driverName = '';
+    String driverSurname = '';
+    String driverPhone = '';
+    String driverExpireDateOfLicence = '';
+    String driverLicenceLink = '';
+
     try {
-      bool isFound = false;
-
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('driverOffers').get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        for (var doc in querySnapshot.docs) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-          if (data['adId'] == widget.ad.id &&
-              data['driverId'] == FirebaseAuth.instance.currentUser!.uid) {
-            isFound = true;
-          }
-        }
-      } else {
-        print('No data found');
-      }
-
-      setState(() {
-        isOffered = isFound;
-      });
-    } catch (error) {
-      setState(() {
-        print('Something went wrong. Please try again later.');
-      });
-    }
-  }
-
-  void _isDriver() async {
-    try {
-      bool isFound = false;
-
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('driver').get();
 
@@ -76,8 +43,12 @@ class _AdDetailsState extends State<AdDetails> {
         for (var doc in querySnapshot.docs) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-          if (data['userId'] == FirebaseAuth.instance.currentUser!.uid) {
-            isFound = true;
+          if (data['userId'] == driverId) {
+            driverName = data['name'];
+            driverSurname = data['surname'];
+            driverPhone = data['phone'];
+            driverExpireDateOfLicence = data['expireDateOfLicence'];
+            driverLicenceLink = data['driverLicence'];
           }
         }
       } else {
@@ -85,7 +56,11 @@ class _AdDetailsState extends State<AdDetails> {
       }
 
       setState(() {
-        isDriver = isFound;
+        _driverName = driverName;
+        _driverSurname = driverSurname;
+        _driverPhone = driverPhone;
+        _driverExpireDateOfLicence = driverExpireDateOfLicence;
+        _driverLicenceLink = driverLicenceLink;
       });
     } catch (error) {
       setState(() {
@@ -94,106 +69,20 @@ class _AdDetailsState extends State<AdDetails> {
     }
   }
 
-  void _loadOffers() async {
-    List<Offer> loadedOffers = [];
-    try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('driverOffers').get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        for (var doc in querySnapshot.docs) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-          Offer offer = Offer(
-            driverId: data['driverId'],
-            driverName: data['driverName'],
-            driverSurname: data['driverSurname'],
-            driverPhone: data['driverPhone'],
-            driverExpireDateOfLicence: data['driverExpireDateOfLİcence'],
-            driverLicenceLink: data['driverLicence'],
-            offerId: data['offerId'],
-            adId: data['adId'],
-          );
-
-          loadedOffers.add(offer);
-        }
-      } else {
-        print('No data found');
-      }
-
-      setState(() {
-        _myOffers = loadedOffers;
-      });
-    } catch (error) {
-      setState(() {
-        print('Something went wrong. Please try again later.');
-      });
-    }
-  }
-
-  void _giveAnOffer() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CreateOffer(
-          driverId: FirebaseAuth.instance.currentUser!.uid,
-        ),
-      ),
-    );
-
-    if (result == false) {
-      return;
-    }
-
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('driver').get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      for (var doc in querySnapshot.docs) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-        if (data['userId'] == FirebaseAuth.instance.currentUser!.uid) {
-          _driverName = data['name'];
-          _driverSurname = data['surname'];
-          _driverPhone = data['phone'];
-          _driverExpireDateOfLicence = data['expireDateOfLicence'];
-          _driverLicenceLink = data['driverLicence'];
-        }
-      }
-    } else {
-      print('No data found');
-    }
-
+  void _saveOffer() async {
     setState(() {
-      _myOffers.add(
-        Offer(
-          driverId: FirebaseAuth.instance.currentUser!.uid,
-          driverName: _driverName,
-          driverSurname: _driverSurname,
-          driverPhone: _driverPhone,
-          driverExpireDateOfLicence: _driverExpireDateOfLicence,
-          driverLicenceLink: _driverLicenceLink,
-          offerId:
-              'Offer${_myOffers.length}-${FirebaseAuth.instance.currentUser!.uid}',
-          adId: widget.ad.id,
-        ),
-      );
+      _isOffered = true;
     });
 
-    await FirebaseFirestore.instance
-        .collection('driverOffers')
-        .doc('Ad${_myOffers.length}-${FirebaseAuth.instance.currentUser!.uid}')
-        .set({
-      'driverId': FirebaseAuth.instance.currentUser!.uid,
-      'driverName': _driverName,
-      'driverSurname': _driverSurname,
-      'driverPhone': _driverPhone,
-      'driverExpireDateOfLİcence': _driverExpireDateOfLicence,
-      'driverLicence': _driverLicenceLink,
-      'offerId':
-          'Offer${_myOffers.length}-${FirebaseAuth.instance.currentUser!.uid}',
-      'adId': widget.ad.id,
+    Navigator.pop(context, _isOffered);
+  }
+
+  void _cancel() async {
+    setState(() {
+      _isOffered = false;
     });
+
+    Navigator.pop(context, _isOffered);
   }
 
   @override
@@ -204,9 +93,9 @@ class _AdDetailsState extends State<AdDetails> {
           color: Colors.white, //change your color here
         ),
         backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-        title: Text(
-          widget.ad.id,
-          style: const TextStyle(color: Colors.white),
+        title: const Text(
+          'Create New Offer',
+          style: TextStyle(color: Colors.white),
         ),
       ),
       body: Column(
@@ -230,7 +119,7 @@ class _AdDetailsState extends State<AdDetails> {
                                 top: 40,
                               ),
                               child: Text(
-                                'Departure',
+                                'Driver Name',
                                 style: GoogleFonts.lato(
                                   color: const Color.fromARGB(255, 31, 40, 51),
                                   fontSize: 18,
@@ -244,34 +133,15 @@ class _AdDetailsState extends State<AdDetails> {
                                 bottom: 8,
                               ),
                               child: Text(
-                                widget.ad.departure,
+                                _driverName,
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(width: 65),
-                        const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: 8,
-                                right: 8,
-                                bottom: 8,
-                                top: 40,
-                              ),
-                              child: Icon(
-                                Icons.local_shipping,
-                                color: Color.fromARGB(255, 31, 40, 51),
-                                size: 27,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 65),
+                        const SizedBox(width: 100),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(
@@ -279,7 +149,7 @@ class _AdDetailsState extends State<AdDetails> {
                                 top: 40,
                               ),
                               child: Text(
-                                'Arrival',
+                                'Driver Surname',
                                 style: GoogleFonts.lato(
                                   color: const Color.fromARGB(255, 31, 40, 51),
                                   fontSize: 18,
@@ -292,7 +162,7 @@ class _AdDetailsState extends State<AdDetails> {
                                 bottom: 8,
                               ),
                               child: Text(
-                                widget.ad.arrival,
+                                _driverSurname,
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
@@ -310,84 +180,12 @@ class _AdDetailsState extends State<AdDetails> {
                             Padding(
                               padding: const EdgeInsets.only(
                                 left: 25,
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Text(
-                                'Departure Date',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                widget.ad.departureDate,
-                                style: const TextStyle(fontSize: 15),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Text(
-                                'Arrival date',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                widget.ad.arrivalDate,
-                                style: const TextStyle(fontSize: 15),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
                                 right: 8,
                                 bottom: 8,
                                 top: 8,
                               ),
                               child: Text(
-                                'Advertisement Id',
+                                'Driver Id',
                                 style: GoogleFonts.lato(
                                   color: const Color.fromARGB(255, 31, 40, 51),
                                   fontSize: 18,
@@ -402,7 +200,7 @@ class _AdDetailsState extends State<AdDetails> {
                                 bottom: 8,
                               ),
                               child: Text(
-                                widget.ad.id,
+                                driverId,
                                 style: const TextStyle(fontSize: 15.5),
                               ),
                             ),
@@ -425,7 +223,7 @@ class _AdDetailsState extends State<AdDetails> {
                                 top: 8,
                               ),
                               child: Text(
-                                'Load Content',
+                                'Driver Phone',
                                 style: GoogleFonts.lato(
                                   color: const Color.fromARGB(255, 31, 40, 51),
                                   fontSize: 18,
@@ -440,8 +238,8 @@ class _AdDetailsState extends State<AdDetails> {
                                 bottom: 8,
                               ),
                               child: Text(
-                                widget.ad.loadContent,
-                                style: const TextStyle(fontSize: 16),
+                                _driverPhone,
+                                style: const TextStyle(fontSize: 15.5),
                               ),
                             ),
                           ],
@@ -450,6 +248,7 @@ class _AdDetailsState extends State<AdDetails> {
                     ),
                     const SizedBox(height: 40),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -457,12 +256,11 @@ class _AdDetailsState extends State<AdDetails> {
                             Padding(
                               padding: const EdgeInsets.only(
                                 left: 25,
-                                right: 8,
                                 bottom: 8,
                                 top: 8,
                               ),
                               child: Text(
-                                'Cost',
+                                'Expire Date Of Driver licence',
                                 style: GoogleFonts.lato(
                                   color: const Color.fromARGB(255, 31, 40, 51),
                                   fontSize: 18,
@@ -473,15 +271,67 @@ class _AdDetailsState extends State<AdDetails> {
                             Padding(
                               padding: const EdgeInsets.only(
                                 left: 25,
-                                right: 8,
                                 bottom: 8,
                               ),
                               child: Text(
-                                '${widget.ad.cost}',
+                                _driverExpireDateOfLicence,
                                 style: const TextStyle(fontSize: 15),
                               ),
                             ),
                           ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 25,
+                                bottom: 8,
+                                top: 8,
+                              ),
+                              child: Text(
+                                'Driver Licence',
+                                style: GoogleFonts.lato(
+                                  color: const Color.fromARGB(255, 31, 40, 51),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 25,
+                                bottom: 8,
+                              ),
+                              child: CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  _driverLicenceLink,
+                                ),
+                                backgroundColor:
+                                    const Color.fromARGB(255, 31, 40, 51),
+                                radius: 60,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: _cancel,
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: _saveOffer,
+                          child: const Text('Save'),
                         ),
                       ],
                     ),
@@ -492,42 +342,6 @@ class _AdDetailsState extends State<AdDetails> {
           ),
         ],
       ),
-      floatingActionButton: (isDriver && !isOffered)
-          ? Padding(
-              padding: const EdgeInsets.all(80.0),
-              child: SizedBox(
-                width: 400,
-                height: 50,
-                child: FloatingActionButton(
-                  backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-                  onPressed: _giveAnOffer,
-                  child: const Text(
-                    'Give an Offer',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(80.0),
-              child: SizedBox(
-                width: 400,
-                height: 50,
-                child: FloatingActionButton(
-                  backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-                  onPressed: () {},
-                  child: const Text(
-                    'Offer has already given',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
