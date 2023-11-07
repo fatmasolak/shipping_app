@@ -63,7 +63,7 @@ class _OfferDetailsState extends State<OfferDetails> {
               'driverName': widget.offer.driverName,
               'driverSurname': widget.offer.driverSurname,
               'driverPhone': widget.offer.driverPhone,
-              'driverExpireDateOfLİcence':
+              'driverExpireDateOfLicence':
                   widget.offer.driverExpireDateOfLicence,
               'driverLicence': widget.offer.driverLicenceLink,
               'offerId': widget.offer.offerId,

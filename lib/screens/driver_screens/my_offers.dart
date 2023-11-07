@@ -43,7 +43,7 @@ class _MyOffersState extends State<MyOffers> {
               driverName: data['driverName'],
               driverSurname: data['driverSurname'],
               driverPhone: data['driverPhone'],
-              driverExpireDateOfLicence: data['driverExpireDateOfLİcence'],
+              driverExpireDateOfLicence: data['driverExpireDateOfLicence'],
               driverLicenceLink: data['driverLicence'],
               offerId: data['offerId'],
               adId: data['adId'],

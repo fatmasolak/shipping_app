@@ -69,7 +69,7 @@ class _ApprovedAdsState extends State<ApprovedAds> {
   Widget build(BuildContext context) {
     Widget content = const Center(
       child: Text(
-        'There is no approved ads yet.',
+        'There is no approved ad yet.',
         style: TextStyle(
           color: Color.fromARGB(255, 31, 40, 51),
         ),

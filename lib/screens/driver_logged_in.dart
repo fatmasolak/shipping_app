@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shipping_app/screens/driver_screens/approved_offers.dart';
+import 'package:shipping_app/screens/driver_screens/completed_offers.dart';
 import 'package:shipping_app/screens/driver_screens/my_offers.dart';
 import 'package:shipping_app/screens/driver_screens/waiting_ads.dart';
 
@@ -18,6 +19,7 @@ class _DriverLoggedInScreenState extends State<DriverLoggedInScreen> {
     const WaitingAds(),
     const MyOffers(),
     const ApprovedOffers(),
+    const CompletedOffers(),
   ];
 
   void _onItemTapped(int index) {
@@ -52,22 +54,29 @@ class _DriverLoggedInScreenState extends State<DriverLoggedInScreen> {
       ),
       body: _pages.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(255, 31, 40, 51),
+        type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Waiting Ads',
+            icon: Icon(
+              Icons.home,
+            ),
+            label: 'Ads',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.incomplete_circle),
-            label: 'My Offers',
+            label: 'Offers',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.check_outlined),
-            label: 'Approved Offers',
+            label: 'Approved',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.done_all),
+            label: 'Completed',
           ),
         ],
         currentIndex: _selectedIndex,
+        backgroundColor: const Color.fromARGB(255, 31, 40, 51),
         unselectedItemColor: Colors.white,
         selectedItemColor: const Color.fromARGB(255, 102, 252, 241),
         onTap: _onItemTapped,
