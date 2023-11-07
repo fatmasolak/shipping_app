@@ -69,6 +69,7 @@ class _MyOffersState extends State<MyOffers> {
                     loadContent: adData['loadContent'],
                     cost: adData['cost'],
                     id: adData['adId'],
+                    offerId: '',
                   );
 
                   loadedOfferedAds.add(ad);
@@ -102,7 +103,7 @@ class _MyOffersState extends State<MyOffers> {
   Widget build(BuildContext context) {
     Widget content = const Center(
       child: Text(
-        'There is no ad offered yet.',
+        'There is no offer yet.',
         style: TextStyle(
           color: Color.fromARGB(255, 31, 40, 51),
         ),
@@ -114,7 +115,7 @@ class _MyOffersState extends State<MyOffers> {
     }
     if (_myOffers.isNotEmpty) {
       content = ListView.builder(
-        itemCount: _myOffers.length,
+        itemCount: _offeredAds.length,
         itemBuilder: (context, index) => Center(
           child: SingleChildScrollView(
             child: Padding(

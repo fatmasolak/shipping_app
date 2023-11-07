@@ -7,6 +7,7 @@ class Ad {
     required this.loadContent,
     required this.cost,
     required this.id,
+    required this.offerId,
   });
 
   final String departure;
@@ -16,4 +17,5 @@ class Ad {
   final String loadContent;
   final int cost;
   final String id;
+  final String offerId;
 }

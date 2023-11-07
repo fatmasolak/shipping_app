@@ -17,7 +17,7 @@ class PayloaderLoggedInScreen extends StatefulWidget {
 }
 
 class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
-  List<Ad> _myAds = [];
+  List<Ad> _payloaderAds = [];
   int _selectedIndex = 0;
   bool showButton = true;
 
@@ -62,6 +62,55 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
             loadContent: data['loadContent'],
             cost: data['cost'],
             id: data['adId'],
+            offerId: '',
+          );
+
+          loadedAds.add(ad);
+        }
+      } else {
+        print('No data found');
+      }
+
+      QuerySnapshot querySnapshotApprovedAds =
+          await FirebaseFirestore.instance.collection('approvedAds').get();
+
+      if (querySnapshotApprovedAds.docs.isNotEmpty) {
+        for (var doc in querySnapshotApprovedAds.docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Ad ad = Ad(
+            departure: data['departure'],
+            arrival: data['arrival'],
+            departureDate: data['departureDate'],
+            arrivalDate: data['arrivalDate'],
+            loadContent: data['loadContent'],
+            cost: data['cost'],
+            id: data['adId'],
+            offerId: '',
+          );
+
+          loadedAds.add(ad);
+        }
+      } else {
+        print('No data found');
+      }
+
+      QuerySnapshot querySnapshotCompletedAds =
+          await FirebaseFirestore.instance.collection('completedAds').get();
+
+      if (querySnapshotCompletedAds.docs.isNotEmpty) {
+        for (var doc in querySnapshotCompletedAds.docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Ad ad = Ad(
+            departure: data['departure'],
+            arrival: data['arrival'],
+            departureDate: data['departureDate'],
+            arrivalDate: data['arrivalDate'],
+            loadContent: data['loadContent'],
+            cost: data['cost'],
+            id: data['adId'],
+            offerId: '',
           );
 
           loadedAds.add(ad);
@@ -71,7 +120,7 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
       }
 
       setState(() {
-        _myAds = loadedAds;
+        _payloaderAds = loadedAds;
       });
     } catch (error) {
       setState(() {
@@ -93,12 +142,13 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
     }
 
     setState(() {
-      _myAds.add(result);
+      _payloaderAds.add(result);
     });
 
     await FirebaseFirestore.instance
         .collection('payloaderAds')
-        .doc('Ad${_myAds.length}-${FirebaseAuth.instance.currentUser!.uid}')
+        .doc(
+            'Ad${_payloaderAds.length}-${FirebaseAuth.instance.currentUser!.uid}')
         .set({
       'departure': result.departure,
       'arrival': result.arrival,
@@ -106,7 +156,8 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
       'arrivalDate': result.arrivalDate,
       'loadContent': result.loadContent,
       'cost': result.cost,
-      'adId': 'Ad${_myAds.length}-${FirebaseAuth.instance.currentUser!.uid}',
+      'adId':
+          'Ad${_payloaderAds.length}-${FirebaseAuth.instance.currentUser!.uid}',
       'payloaderId': FirebaseAuth.instance.currentUser!.uid,
     });
   }

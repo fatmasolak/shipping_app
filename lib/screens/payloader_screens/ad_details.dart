@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:shipping_app/models/ad.dart';
 import 'package:shipping_app/models/offer.dart';
+import 'package:shipping_app/widgets/ad_offers.dart';
 import 'package:shipping_app/widgets/create_offer.dart';
 
 class AdDetails extends StatefulWidget {
@@ -18,7 +19,8 @@ class AdDetails extends StatefulWidget {
 }
 
 class _AdDetailsState extends State<AdDetails> {
-  List<Offer> _myOffers = [];
+  List<Offer> _driverOffers = [];
+  List<Offer> _adOffers = [];
   String _driverName = '';
   String _driverSurname = '';
   String _driverPhone = '';
@@ -26,13 +28,16 @@ class _AdDetailsState extends State<AdDetails> {
   String _driverLicenceLink = '';
   bool isDriver = false;
   bool isOffered = false;
+  bool isApproved = false;
 
   @override
   void initState() {
     super.initState();
     _isDriver();
     _isOffered();
+    _isApproved();
     _loadOffers();
+    _loadAdOffers();
   }
 
   void _isOffered() async {
@@ -94,6 +99,35 @@ class _AdDetailsState extends State<AdDetails> {
     }
   }
 
+  void _isApproved() async {
+    try {
+      bool isFound = false;
+
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('approvedAds').get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          if (data['adId'] == widget.ad.id) {
+            isFound = true;
+          }
+        }
+      } else {
+        print('No data found');
+      }
+
+      setState(() {
+        isApproved = isFound;
+      });
+    } catch (error) {
+      setState(() {
+        print('Something went wrong. Please try again later.');
+      });
+    }
+  }
+
   void _loadOffers() async {
     List<Offer> loadedOffers = [];
     try {
@@ -121,8 +155,56 @@ class _AdDetailsState extends State<AdDetails> {
         print('No data found');
       }
 
+      QuerySnapshot querySnapshotApprovedOffers =
+          await FirebaseFirestore.instance.collection('approvedOffers').get();
+
+      if (querySnapshotApprovedOffers.docs.isNotEmpty) {
+        for (var doc in querySnapshotApprovedOffers.docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Offer offer = Offer(
+            driverId: data['driverId'],
+            driverName: data['driverName'],
+            driverSurname: data['driverSurname'],
+            driverPhone: data['driverPhone'],
+            driverExpireDateOfLicence: data['driverExpireDateOfLİcence'],
+            driverLicenceLink: data['driverLicence'],
+            offerId: data['offerId'],
+            adId: data['adId'],
+          );
+
+          loadedOffers.add(offer);
+        }
+      } else {
+        print('No data found');
+      }
+
+      QuerySnapshot querySnapshotCompletedOffers =
+          await FirebaseFirestore.instance.collection('completedOffers').get();
+
+      if (querySnapshotCompletedOffers.docs.isNotEmpty) {
+        for (var doc in querySnapshotCompletedOffers.docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Offer offer = Offer(
+            driverId: data['driverId'],
+            driverName: data['driverName'],
+            driverSurname: data['driverSurname'],
+            driverPhone: data['driverPhone'],
+            driverExpireDateOfLicence: data['driverExpireDateOfLİcence'],
+            driverLicenceLink: data['driverLicence'],
+            offerId: data['offerId'],
+            adId: data['adId'],
+          );
+
+          loadedOffers.add(offer);
+        }
+      } else {
+        print('No data found');
+      }
+
       setState(() {
-        _myOffers = loadedOffers;
+        _driverOffers = loadedOffers;
       });
     } catch (error) {
       setState(() {
@@ -165,7 +247,7 @@ class _AdDetailsState extends State<AdDetails> {
     }
 
     setState(() {
-      _myOffers.add(
+      _driverOffers.add(
         Offer(
           driverId: FirebaseAuth.instance.currentUser!.uid,
           driverName: _driverName,
@@ -174,7 +256,7 @@ class _AdDetailsState extends State<AdDetails> {
           driverExpireDateOfLicence: _driverExpireDateOfLicence,
           driverLicenceLink: _driverLicenceLink,
           offerId:
-              'Offer${_myOffers.length}-${FirebaseAuth.instance.currentUser!.uid}',
+              'Offer${_driverOffers.length}-${FirebaseAuth.instance.currentUser!.uid}',
           adId: widget.ad.id,
         ),
       );
@@ -182,7 +264,8 @@ class _AdDetailsState extends State<AdDetails> {
 
     await FirebaseFirestore.instance
         .collection('driverOffers')
-        .doc('Ad${_myOffers.length}-${FirebaseAuth.instance.currentUser!.uid}')
+        .doc(
+            'Offer${_driverOffers.length}-${FirebaseAuth.instance.currentUser!.uid}')
         .set({
       'driverId': FirebaseAuth.instance.currentUser!.uid,
       'driverName': _driverName,
@@ -191,9 +274,49 @@ class _AdDetailsState extends State<AdDetails> {
       'driverExpireDateOfLİcence': _driverExpireDateOfLicence,
       'driverLicence': _driverLicenceLink,
       'offerId':
-          'Offer${_myOffers.length}-${FirebaseAuth.instance.currentUser!.uid}',
+          'Offer${_driverOffers.length}-${FirebaseAuth.instance.currentUser!.uid}',
       'adId': widget.ad.id,
     });
+  }
+
+  void _loadAdOffers() async {
+    List<Offer> loadedAdOffers = [];
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('driverOffers').get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          if (data['adId'] == widget.ad.id) {
+            Offer offer = Offer(
+              driverId: data['driverId'],
+              driverName: data['driverName'],
+              driverSurname: data['driverSurname'],
+              driverPhone: data['driverPhone'],
+              driverExpireDateOfLicence: data['driverExpireDateOfLİcence'],
+              driverLicenceLink: data['driverLicence'],
+              offerId: data['offerId'],
+              adId: data['adId'],
+            );
+
+            loadedAdOffers.add(offer);
+          }
+        }
+      } else {
+        print('No data found');
+      }
+
+      setState(() {
+        _adOffers = loadedAdOffers;
+        print(_adOffers.length);
+      });
+    } catch (error) {
+      setState(() {
+        print('Something went wrong. Please try again later.');
+      });
+    }
   }
 
   @override
@@ -209,290 +332,289 @@ class _AdDetailsState extends State<AdDetails> {
           style: const TextStyle(color: Colors.white),
         ),
       ),
-      body: Column(
-        children: [
-          Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                                top: 40,
-                              ),
-                              child: Text(
-                                'Departure',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Center(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              bottom: 8,
+                              top: 40,
+                            ),
+                            child: Text(
+                              'Departure',
+                              style: GoogleFonts.lato(
+                                color: const Color.fromARGB(255, 31, 40, 51),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                widget.ad.departure,
-                                style: const TextStyle(fontSize: 16),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              bottom: 8,
+                            ),
+                            child: Text(
+                              widget.ad.departure,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 65),
+                      const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                              left: 8,
+                              right: 8,
+                              bottom: 8,
+                              top: 40,
+                            ),
+                            child: Icon(
+                              Icons.local_shipping,
+                              color: Color.fromARGB(255, 31, 40, 51),
+                              size: 27,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 65),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 8,
+                              top: 40,
+                            ),
+                            child: Text(
+                              'Arrival',
+                              style: GoogleFonts.lato(
+                                color: const Color.fromARGB(255, 31, 40, 51),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(width: 65),
-                        const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: 8,
-                                right: 8,
-                                bottom: 8,
-                                top: 40,
-                              ),
-                              child: Icon(
-                                Icons.local_shipping,
-                                color: Color.fromARGB(255, 31, 40, 51),
-                                size: 27,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 8,
+                            ),
+                            child: Text(
+                              widget.ad.arrival,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              bottom: 8,
+                              top: 8,
+                            ),
+                            child: Text(
+                              'Departure Date',
+                              style: GoogleFonts.lato(
+                                color: const Color.fromARGB(255, 31, 40, 51),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(width: 65),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 8,
-                                top: 40,
-                              ),
-                              child: Text(
-                                'Arrival',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              bottom: 8,
+                            ),
+                            child: Text(
+                              widget.ad.departureDate,
+                              style: const TextStyle(fontSize: 15),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              bottom: 8,
+                              top: 8,
+                            ),
+                            child: Text(
+                              'Arrival date',
+                              style: GoogleFonts.lato(
+                                color: const Color.fromARGB(255, 31, 40, 51),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                widget.ad.arrival,
-                                style: const TextStyle(fontSize: 16),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              bottom: 8,
+                            ),
+                            child: Text(
+                              widget.ad.arrivalDate,
+                              style: const TextStyle(fontSize: 15),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              right: 8,
+                              bottom: 8,
+                              top: 8,
+                            ),
+                            child: Text(
+                              'Advertisement Id',
+                              style: GoogleFonts.lato(
+                                color: const Color.fromARGB(255, 31, 40, 51),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Text(
-                                'Departure Date',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              right: 8,
+                              bottom: 8,
+                            ),
+                            child: Text(
+                              widget.ad.id,
+                              style: const TextStyle(fontSize: 15.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              right: 8,
+                              bottom: 8,
+                              top: 8,
+                            ),
+                            child: Text(
+                              'Load Content',
+                              style: GoogleFonts.lato(
+                                color: const Color.fromARGB(255, 31, 40, 51),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                widget.ad.departureDate,
-                                style: const TextStyle(fontSize: 15),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              right: 8,
+                              bottom: 8,
+                            ),
+                            child: Text(
+                              widget.ad.loadContent,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
+                  Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              right: 8,
+                              bottom: 8,
+                              top: 8,
+                            ),
+                            child: Text(
+                              'Cost',
+                              style: GoogleFonts.lato(
+                                color: const Color.fromARGB(255, 31, 40, 51),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Text(
-                                'Arrival date',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 25,
+                              right: 8,
+                              bottom: 8,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                widget.ad.arrivalDate,
-                                style: const TextStyle(fontSize: 15),
-                              ),
+                            child: Text(
+                              '${widget.ad.cost}',
+                              style: const TextStyle(fontSize: 15),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                right: 8,
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Text(
-                                'Advertisement Id',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                right: 8,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                widget.ad.id,
-                                style: const TextStyle(fontSize: 15.5),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                right: 8,
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Text(
-                                'Load Content',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                right: 8,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                widget.ad.loadContent,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                right: 8,
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Text(
-                                'Cost',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                right: 8,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                '${widget.ad.cost}',
-                                style: const TextStyle(fontSize: 15),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 10),
+            if (!isDriver && !isApproved) AdOffers(adOffers: _adOffers),
+          ],
+        ),
       ),
-      floatingActionButton: (isDriver && !isOffered)
+      floatingActionButton: (isDriver)
           ? Padding(
               padding: const EdgeInsets.all(80.0),
               child: SizedBox(
@@ -500,33 +622,17 @@ class _AdDetailsState extends State<AdDetails> {
                 height: 50,
                 child: FloatingActionButton(
                   backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-                  onPressed: _giveAnOffer,
-                  child: const Text(
-                    'Give an Offer',
-                    style: TextStyle(
+                  onPressed: !isOffered ? _giveAnOffer : () {},
+                  child: Text(
+                    !isOffered ? 'Give an Offer' : 'Offer has already given',
+                    style: const TextStyle(
                       color: Colors.white,
                     ),
                   ),
                 ),
               ),
             )
-          : Padding(
-              padding: const EdgeInsets.all(80.0),
-              child: SizedBox(
-                width: 400,
-                height: 50,
-                child: FloatingActionButton(
-                  backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-                  onPressed: () {},
-                  child: const Text(
-                    'Offer has already given',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }

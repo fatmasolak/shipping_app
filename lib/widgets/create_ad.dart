@@ -31,6 +31,7 @@ class _CreateAdState extends State<CreateAd> {
     loadContent: '',
     cost: 0,
     id: '',
+    offerId: '',
   );
 
   void _saveAd() async {
@@ -55,6 +56,7 @@ class _CreateAdState extends State<CreateAd> {
         loadContent: _enteredLoadContent,
         cost: _enteredCost,
         id: '',
+        offerId: '',
       );
     });
 
