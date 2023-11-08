@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shipping_app/models/ad.dart';
@@ -42,18 +43,21 @@ class _CompletedOffersState extends State<CompletedOffers> {
                   docAd.data() as Map<String, dynamic>;
 
               if (data['offerId'] == dataAd['offerId']) {
-                loadedCompletedAds.add(
-                  Ad(
-                    departure: dataAd['departure'],
-                    arrival: dataAd['arrival'],
-                    departureDate: dataAd['departureDate'],
-                    arrivalDate: dataAd['arrivalDate'],
-                    loadContent: dataAd['loadContent'],
-                    cost: dataAd['cost'],
-                    id: dataAd['adId'],
-                    offerId: dataAd['offerId'],
-                  ),
-                );
+                if (data['driverId'] ==
+                    FirebaseAuth.instance.currentUser!.uid) {
+                  loadedCompletedAds.add(
+                    Ad(
+                      departure: dataAd['departure'],
+                      arrival: dataAd['arrival'],
+                      departureDate: dataAd['departureDate'],
+                      arrivalDate: dataAd['arrivalDate'],
+                      loadContent: dataAd['loadContent'],
+                      cost: dataAd['cost'],
+                      id: dataAd['adId'],
+                      offerId: dataAd['offerId'],
+                    ),
+                  );
+                }
               }
             }
           }
