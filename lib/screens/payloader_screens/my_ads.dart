@@ -17,11 +17,42 @@ class MyAds extends StatefulWidget {
 class _MyAdsState extends State<MyAds> {
   var _isLoading = true;
   List<Ad> _myAds = [];
+  bool isDriver = false;
 
   @override
   void initState() {
     super.initState();
     _loadAds();
+    _isDriver();
+  }
+
+  void _isDriver() async {
+    try {
+      bool isFound = false;
+
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('driver').get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          if (data['userId'] == FirebaseAuth.instance.currentUser!.uid) {
+            isFound = true;
+          }
+        }
+      } else {
+        print('No data found');
+      }
+
+      setState(() {
+        isDriver = isFound;
+      });
+    } catch (error) {
+      setState(() {
+        print('Something went wrong. Please try again later.');
+      });
+    }
   }
 
   void _loadAds() async {
@@ -93,6 +124,7 @@ class _MyAdsState extends State<MyAds> {
                     MaterialPageRoute(
                       builder: (context) => AdDetails(
                         ad: _myAds[index],
+                        isDriver: isDriver,
                       ),
                     ),
                   );

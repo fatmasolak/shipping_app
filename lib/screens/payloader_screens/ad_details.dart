@@ -10,9 +10,10 @@ import 'package:shipping_app/widgets/ad_offers.dart';
 import 'package:shipping_app/widgets/create_offer.dart';
 
 class AdDetails extends StatefulWidget {
-  const AdDetails({super.key, required this.ad});
+  const AdDetails({super.key, required this.ad, required this.isDriver});
 
   final Ad ad;
+  final bool isDriver;
 
   @override
   State<AdDetails> createState() => _AdDetailsState();
@@ -26,14 +27,14 @@ class _AdDetailsState extends State<AdDetails> {
   String _driverPhone = '';
   String _driverExpireDateOfLicence = '';
   String _driverLicenceLink = '';
-  bool isDriver = false;
+
   bool isOffered = false;
   bool isApproved = false;
 
   @override
   void initState() {
     super.initState();
-    _isDriver();
+
     _isOffered();
     _isApproved();
     _loadOffers();
@@ -62,35 +63,6 @@ class _AdDetailsState extends State<AdDetails> {
 
       setState(() {
         isOffered = isFound;
-      });
-    } catch (error) {
-      setState(() {
-        print('Something went wrong. Please try again later.');
-      });
-    }
-  }
-
-  void _isDriver() async {
-    try {
-      bool isFound = false;
-
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('driver').get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        for (var doc in querySnapshot.docs) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-          if (data['userId'] == FirebaseAuth.instance.currentUser!.uid) {
-            isFound = true;
-          }
-        }
-      } else {
-        print('No data found');
-      }
-
-      setState(() {
-        isDriver = isFound;
       });
     } catch (error) {
       setState(() {
@@ -260,6 +232,7 @@ class _AdDetailsState extends State<AdDetails> {
           adId: widget.ad.id,
         ),
       );
+      isOffered = true;
     });
 
     await FirebaseFirestore.instance
@@ -610,11 +583,11 @@ class _AdDetailsState extends State<AdDetails> {
               ),
             ),
             const SizedBox(height: 10),
-            if (!isDriver && !isApproved) AdOffers(adOffers: _adOffers),
+            if (!widget.isDriver && !isApproved) AdOffers(adOffers: _adOffers),
           ],
         ),
       ),
-      floatingActionButton: (isDriver)
+      floatingActionButton: (widget.isDriver)
           ? Padding(
               padding: const EdgeInsets.all(80.0),
               child: SizedBox(

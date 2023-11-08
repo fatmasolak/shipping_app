@@ -17,6 +17,8 @@ class ApprovedOffers extends StatefulWidget {
 class _ApprovedOffersState extends State<ApprovedOffers> {
   var _isLoading = true;
   List<Ad> _offeredAds = [];
+  var _isCompleted = false;
+  var _isComplating = false;
 
   @override
   void initState() {
@@ -98,6 +100,10 @@ class _ApprovedOffersState extends State<ApprovedOffers> {
   }
 
   void _completeAd(Ad ad) async {
+    setState(() {
+      _isComplating = true;
+    });
+
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('approvedOffers').get();
 
@@ -166,6 +172,10 @@ class _ApprovedOffersState extends State<ApprovedOffers> {
           (doc) => print("Document deleted"),
           onError: (e) => print("Error updating document $e"),
         );
+
+    setState(() {
+      _isCompleted = true;
+    });
   }
 
   @override
@@ -182,7 +192,7 @@ class _ApprovedOffersState extends State<ApprovedOffers> {
     if (_isLoading) {
       content = const Center(child: CircularProgressIndicator());
     }
-    if (_offeredAds.isNotEmpty) {
+    if (_offeredAds.isNotEmpty && !_isCompleted) {
       content = ListView.builder(
         itemCount: _offeredAds.length,
         itemBuilder: (context, index) => Center(
@@ -335,13 +345,14 @@ class _ApprovedOffersState extends State<ApprovedOffers> {
                           ],
                         ),
                         const SizedBox(width: 220),
-                        ElevatedButton(
-                          onPressed: () {
-                            Ad ad = _offeredAds[index];
-                            _completeAd(ad);
-                          },
-                          child: const Text('Complete'),
-                        ),
+                        !_isComplating
+                            ? ElevatedButton(
+                                onPressed: () {
+                                  Ad ad = _offeredAds[index];
+                                  _completeAd(ad);
+                                },
+                                child: const Text('Complete'))
+                            : const CircularProgressIndicator(),
                       ],
                     ),
                   ],

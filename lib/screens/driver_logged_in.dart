@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shipping_app/screens/driver_screens/approved_offers.dart';
@@ -52,7 +53,21 @@ class _DriverLoggedInScreenState extends State<DriverLoggedInScreen> {
           ),
         ],
       ),
-      body: _pages.elementAt(_selectedIndex),
+      body: StreamBuilder<QuerySnapshot>(
+        stream:
+            FirebaseFirestore.instance.collection('driverOffers').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+
+          if (snapshot.hasData) {
+            return _pages.elementAt(_selectedIndex);
+          }
+
+          return _pages.elementAt(_selectedIndex);
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[

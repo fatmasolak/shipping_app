@@ -90,6 +90,7 @@ class _WaitingAdsState extends State<WaitingAds> {
                     MaterialPageRoute(
                       builder: (context) => AdDetails(
                         ad: _payloaderAds[index],
+                        isDriver: true,
                       ),
                     ),
                   );

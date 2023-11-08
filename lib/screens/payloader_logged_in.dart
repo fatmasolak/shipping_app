@@ -186,7 +186,34 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
           ),
         ],
       ),
-      body: _pages.elementAt(_selectedIndex),
+      body: StreamBuilder<QuerySnapshot>(
+        stream:
+            FirebaseFirestore.instance.collection('payloaderAds').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+
+          if (snapshot.hasData) {
+            return StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('approvedAds')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+
+                  if (snapshot.hasData) {
+                    return _pages.elementAt(_selectedIndex);
+                  }
+                  return _pages.elementAt(_selectedIndex);
+                });
+          }
+
+          return _pages.elementAt(_selectedIndex);
+        },
+      ),
       floatingActionButton: showButton
           ? Padding(
               padding: const EdgeInsets.all(80.0),

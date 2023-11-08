@@ -91,9 +91,8 @@ class _ApprovedAdsState extends State<ApprovedAds> {
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AdDetails(
-                        ad: _myAds[index],
-                      ),
+                      builder: (context) =>
+                          AdDetails(ad: _myAds[index], isDriver: false),
                     ),
                   );
                 },
