@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shipping_app/enums/pages_enum.dart';
 import 'package:shipping_app/models/ad.dart';
 import 'package:shipping_app/models/offer.dart';
@@ -19,7 +18,7 @@ class ApprovedOffers extends StatefulWidget {
 class _ApprovedOffersState extends State<ApprovedOffers> {
   var _isLoading = true;
   List<Ad> _offeredAds = [];
-  var _isCompleted = false;
+
   var _isComplating = false;
 
   @override
@@ -115,6 +114,15 @@ class _ApprovedOffersState extends State<ApprovedOffers> {
 
         if (data['offerId'] == ad.offerId) {
           await FirebaseFirestore.instance
+              .collection('approvedOffers')
+              .doc(data['offerId'])
+              .delete()
+              .then(
+                (doc) => print("Document deleted"),
+                onError: (e) => print("Error updating document $e"),
+              );
+
+          await FirebaseFirestore.instance
               .collection('completedOffers')
               .doc(data['offerId'])
               .set({
@@ -127,15 +135,6 @@ class _ApprovedOffersState extends State<ApprovedOffers> {
             'offerId': data['offerId'],
             'adId': ad.id,
           });
-
-          await FirebaseFirestore.instance
-              .collection('approvedOffers')
-              .doc(data['offerId'])
-              .delete()
-              .then(
-                (doc) => print("Document deleted"),
-                onError: (e) => print("Error updating document $e"),
-              );
         }
       }
     }
@@ -175,8 +174,15 @@ class _ApprovedOffersState extends State<ApprovedOffers> {
           onError: (e) => print("Error updating document $e"),
         );
 
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Offer has completed.'),
+      ),
+    );
+
     setState(() {
-      _isCompleted = true;
+      _isComplating = false;
     });
   }
 
@@ -194,7 +200,7 @@ class _ApprovedOffersState extends State<ApprovedOffers> {
     if (_isLoading) {
       content = const Center(child: CircularProgressIndicator());
     }
-    if (_offeredAds.isNotEmpty && !_isCompleted) {
+    if (_offeredAds.isNotEmpty) {
       content = ListView.builder(
         itemCount: _offeredAds.length,
         itemBuilder: (context, index) => Center(
@@ -213,120 +219,7 @@ class _ApprovedOffersState extends State<ApprovedOffers> {
         ),
       );
     }
+
     return content;
-  }
-
-  Row advertisementId(int index) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 8,
-                right: 8,
-                bottom: 8,
-                top: 8,
-              ),
-              child: Text(
-                'Advertisement Id',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 8,
-                right: 8,
-                bottom: 8,
-              ),
-              child: Text(_offeredAds[index].id,
-                  style: const TextStyle(fontSize: 12)),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Row departureAndArrival(int index) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: 8,
-                top: 8,
-              ),
-              child: Text(
-                'Departure',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: 8,
-              ),
-              child: Text(_offeredAds[index].departure),
-            ),
-          ],
-        ),
-        const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                left: 110,
-                right: 110,
-                bottom: 8,
-                top: 8,
-              ),
-              child: Icon(
-                Icons.local_shipping,
-                color: Color.fromARGB(255, 31, 40, 51),
-                size: 30,
-              ),
-            ),
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: 8,
-                top: 8,
-              ),
-              child: Text(
-                'Arrival',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: 8,
-              ),
-              child: Text(_offeredAds[index].arrival),
-            ),
-          ],
-        ),
-      ],
-    );
   }
 }

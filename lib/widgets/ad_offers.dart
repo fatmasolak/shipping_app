@@ -37,6 +37,13 @@ class _AdOffersState extends State<AdOffers> {
                       ),
                     );
 
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Offer has approved.'),
+                      ),
+                    );
+
                     setState(() {
                       if (result) {
                         _isApproved = true;

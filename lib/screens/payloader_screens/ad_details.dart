@@ -8,6 +8,7 @@ import 'package:shipping_app/models/ad.dart';
 import 'package:shipping_app/models/offer.dart';
 import 'package:shipping_app/widgets/ad_offers.dart';
 import 'package:shipping_app/widgets/create_offer.dart';
+import 'package:shipping_app/widgets/update_ad.dart';
 
 class AdDetails extends StatefulWidget {
   const AdDetails({super.key, required this.ad, required this.isDriver});
@@ -250,6 +251,13 @@ class _AdDetailsState extends State<AdDetails> {
           'Offer${_driverOffers.length}-${FirebaseAuth.instance.currentUser!.uid}',
       'adId': widget.ad.id,
     });
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Offer has given.'),
+      ),
+    );
   }
 
   void _loadAdOffers() async {
@@ -290,6 +298,67 @@ class _AdDetailsState extends State<AdDetails> {
         print('Something went wrong. Please try again later.');
       });
     }
+  }
+
+  void _updateAd() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UpdateAd(ad: widget.ad),
+      ),
+    );
+
+    if (result == true) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Ad has updated.'),
+        ),
+      );
+
+      Navigator.pop(context);
+    }
+
+    if (result == false) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cancelled.'),
+        ),
+      );
+    }
+  }
+
+  void _deleteAd() async {
+    FirebaseFirestore.instance
+        .collection('payloaderAds')
+        .doc(widget.ad.id)
+        .delete();
+
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('driverOffers').get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      for (var doc in querySnapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+        if (data['adId'] == widget.ad.id) {
+          FirebaseFirestore.instance
+              .collection('driverOffers')
+              .doc(data['offerId'])
+              .delete();
+        }
+      }
+    }
+
+    Navigator.pop(context);
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Ad has deleted.'),
+      ),
+    );
   }
 
   @override
@@ -584,6 +653,26 @@ class _AdDetailsState extends State<AdDetails> {
             ),
             const SizedBox(height: 10),
             if (!widget.isDriver && !isApproved) AdOffers(adOffers: _adOffers),
+            const SizedBox(height: 10),
+            if (!widget.isDriver)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: _updateAd,
+                        child: const Text('Update Ad'),
+                      ),
+                      const SizedBox(width: 30),
+                      ElevatedButton(
+                        onPressed: _deleteAd,
+                        child: const Text('Delete Ad'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
           ],
         ),
       ),

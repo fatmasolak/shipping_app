@@ -160,6 +160,13 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
           'Ad${_payloaderAds.length}-${FirebaseAuth.instance.currentUser!.uid}',
       'payloaderId': FirebaseAuth.instance.currentUser!.uid,
     });
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('New advertisement has added.'),
+      ),
+    );
   }
 
   @override
