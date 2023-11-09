@@ -43,9 +43,26 @@ class _DriverLoggedInScreenState extends State<DriverLoggedInScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              FirebaseAuth.instance.signOut();
-            },
+            onPressed: () => showDialog<String>(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                title: const Text('Logout'),
+                content: const Text('Are you sure you want to log out?'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'No'),
+                    child: const Text('No'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      FirebaseAuth.instance.signOut();
+                      Navigator.pop(context, 'No');
+                    },
+                    child: const Text('Yes'),
+                  ),
+                ],
+              ),
+            ),
             icon: const Icon(
               Icons.exit_to_app,
               color: Colors.white,
