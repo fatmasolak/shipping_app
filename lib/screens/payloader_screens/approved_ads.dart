@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:shipping_app/models/ad.dart';
 import 'package:shipping_app/screens/payloader_screens/ad_details.dart';
+import 'package:shipping_app/widgets/create_ad_card.dart';
 
 class ApprovedAds extends StatefulWidget {
   const ApprovedAds({super.key});
@@ -96,160 +96,7 @@ class _ApprovedAdsState extends State<ApprovedAds> {
                     ),
                   );
                 },
-                child: Card(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: 8,
-                                  top: 8,
-                                ),
-                                child: Text(
-                                  'Departure',
-                                  style: GoogleFonts.lato(
-                                    color:
-                                        const Color.fromARGB(255, 31, 40, 51),
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: 8,
-                                ),
-                                child: Text(_myAds[index].departure),
-                              ),
-                            ],
-                          ),
-                          const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 110,
-                                  right: 110,
-                                  bottom: 8,
-                                  top: 8,
-                                ),
-                                child: Icon(
-                                  Icons.local_shipping,
-                                  color: Color.fromARGB(255, 31, 40, 51),
-                                  size: 30,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: 8,
-                                  top: 8,
-                                ),
-                                child: Text(
-                                  'Arrival',
-                                  style: GoogleFonts.lato(
-                                    color:
-                                        const Color.fromARGB(255, 31, 40, 51),
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: 8,
-                                ),
-                                child: Text(_myAds[index].arrival),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 8,
-                                  right: 8,
-                                  bottom: 8,
-                                  top: 8,
-                                ),
-                                child: Text(
-                                  'Advertisement Id',
-                                  style: GoogleFonts.lato(
-                                    color:
-                                        const Color.fromARGB(255, 31, 40, 51),
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 8,
-                                  right: 8,
-                                  bottom: 8,
-                                ),
-                                child: Text(_myAds[index].id,
-                                    style: const TextStyle(fontSize: 12)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 8,
-                                  right: 8,
-                                  bottom: 8,
-                                  top: 8,
-                                ),
-                                child: Text(
-                                  'Cost',
-                                  style: GoogleFonts.lato(
-                                    color:
-                                        const Color.fromARGB(255, 31, 40, 51),
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 8,
-                                  right: 8,
-                                  bottom: 8,
-                                ),
-                                child: Text('${_myAds[index].cost}',
-                                    style: const TextStyle(fontSize: 12)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                child: CreateAdCard(ads: _myAds, index: index),
               ),
             ),
           ),
