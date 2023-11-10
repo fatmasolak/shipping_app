@@ -18,11 +18,41 @@ class _UserImagePickerState extends State<UserImagePicker> {
   File? _pickedImageFile;
 
   void _pickImage() async {
-    final pickedImage = await ImagePicker().pickImage(
-      source: ImageSource.camera,
-      imageQuality: 50,
-      maxWidth: 150,
-    );
+    var pickedImage;
+
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Choose source of photo'),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  pickedImage = await ImagePicker().pickImage(
+                    source: ImageSource.gallery,
+                    imageQuality: 50,
+                    maxWidth: 150,
+                  );
+
+                  Navigator.pop(context);
+                },
+                child: const Text("Gallery"),
+              ),
+              TextButton(
+                onPressed: () async {
+                  pickedImage = await ImagePicker().pickImage(
+                    source: ImageSource.camera,
+                    imageQuality: 50,
+                    maxWidth: 150,
+                  );
+
+                  Navigator.pop(context);
+                },
+                child: const Text("Camera"),
+              ),
+            ],
+          );
+        });
 
     if (pickedImage == null) {
       return;
