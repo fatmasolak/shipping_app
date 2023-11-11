@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
+import 'package:shipping_app/screens/account_info.dart';
 import 'package:shipping_app/screens/driver_screens/approved_offers.dart';
 import 'package:shipping_app/screens/driver_screens/completed_offers.dart';
 import 'package:shipping_app/screens/driver_screens/my_offers.dart';
@@ -22,6 +23,7 @@ class _DriverLoggedInScreenState extends State<DriverLoggedInScreen> {
     const MyOffers(),
     const ApprovedOffers(),
     const CompletedOffers(),
+    const AccountInfo(),
   ];
 
   void _onItemTapped(int index) {
@@ -70,6 +72,10 @@ class _DriverLoggedInScreenState extends State<DriverLoggedInScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.done_all),
             label: 'Completed',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_rounded),
+            label: 'My Account',
           ),
         ],
         currentIndex: _selectedIndex,

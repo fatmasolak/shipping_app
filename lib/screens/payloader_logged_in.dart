@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shipping_app/models/ad.dart';
+import 'package:shipping_app/screens/account_info.dart';
 import 'package:shipping_app/screens/payloader_screens/approved_ads.dart';
 import 'package:shipping_app/screens/payloader_screens/completed_ads.dart';
 import 'package:shipping_app/screens/payloader_screens/my_ads.dart';
@@ -26,6 +27,7 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
     const MyAds(),
     const ApprovedAds(),
     const CompletedAds(),
+    const AccountInfo(),
   ];
 
   @override
@@ -206,6 +208,7 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
       floatingActionButton: showButton ? createAdButton() : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         backgroundColor: const Color.fromARGB(255, 31, 40, 51),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -219,6 +222,10 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.check_outlined),
             label: 'Completed Ads',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_rounded),
+            label: 'My Account',
           ),
         ],
         currentIndex: _selectedIndex,
