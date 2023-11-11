@@ -6,6 +6,7 @@ import 'package:shipping_app/screens/payloader_screens/approved_ads.dart';
 import 'package:shipping_app/screens/payloader_screens/completed_ads.dart';
 import 'package:shipping_app/screens/payloader_screens/my_ads.dart';
 import 'package:shipping_app/widgets/create_ad.dart';
+import 'package:shipping_app/widgets/create_app_bar.dart';
 
 class PayloaderLoggedInScreen extends StatefulWidget {
   const PayloaderLoggedInScreen({super.key});
@@ -173,43 +174,7 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-        title: const Text(
-          'Shipping',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: const Text('Logout'),
-                content: const Text('Are you sure want to log out?'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, 'No'),
-                    child: const Text('No'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      FirebaseAuth.instance.signOut();
-                      Navigator.pop(context, 'No');
-                    },
-                    child: const Text('Yes'),
-                  ),
-                ],
-              ),
-            ),
-            icon: const Icon(
-              Icons.exit_to_app,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
+      appBar: const CreateAppBar(header: 'Shipping', isShowing: true),
       body: StreamBuilder<QuerySnapshot>(
         stream:
             FirebaseFirestore.instance.collection('payloaderAds').snapshots(),
@@ -238,25 +203,7 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
           return _pages.elementAt(_selectedIndex);
         },
       ),
-      floatingActionButton: showButton
-          ? Padding(
-              padding: const EdgeInsets.all(80.0),
-              child: SizedBox(
-                width: 400,
-                height: 50,
-                child: FloatingActionButton(
-                  backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-                  onPressed: _addNewAd,
-                  child: const Text(
-                    'Create an Ad',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            )
-          : null,
+      floatingActionButton: showButton ? createAdButton() : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromARGB(255, 31, 40, 51),
@@ -278,6 +225,26 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
         unselectedItemColor: Colors.white,
         selectedItemColor: const Color.fromARGB(255, 102, 252, 241),
         onTap: _onItemTapped,
+      ),
+    );
+  }
+
+  Padding createAdButton() {
+    return Padding(
+      padding: const EdgeInsets.all(80.0),
+      child: SizedBox(
+        width: 400,
+        height: 50,
+        child: FloatingActionButton(
+          backgroundColor: const Color.fromARGB(255, 31, 40, 51),
+          onPressed: _addNewAd,
+          child: const Text(
+            'Create an Ad',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
     );
   }

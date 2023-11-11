@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shipping_app/widgets/create_app_bar.dart';
 
 class CreateOffer extends StatefulWidget {
   const CreateOffer({super.key, required this.driverId});
@@ -75,6 +76,13 @@ class _CreateOfferState extends State<CreateOffer> {
     });
 
     Navigator.pop(context, _isOffered);
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Offer has given.'),
+      ),
+    );
   }
 
   void _cancel() async {
@@ -83,21 +91,19 @@ class _CreateOfferState extends State<CreateOffer> {
     });
 
     Navigator.pop(context, _isOffered);
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Cancelled.'),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(
-          color: Colors.white, //change your color here
-        ),
-        backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-        title: const Text(
-          'Create New Offer',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
+      appBar: const CreateAppBar(header: 'Create New Offer', isShowing: false),
       body: Column(
         children: [
           Center(
@@ -106,235 +112,16 @@ class _CreateOfferState extends State<CreateOffer> {
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                                top: 40,
-                              ),
-                              child: Text(
-                                'Driver Name',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                _driverName,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 100),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 8,
-                                top: 40,
-                              ),
-                              child: Text(
-                                'Driver Surname',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                _driverSurname,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                    showDriverNameAndSurname(),
                     const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                right: 8,
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Text(
-                                'Driver Id',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                right: 8,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                driverId,
-                                style: const TextStyle(fontSize: 15.5),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                    showDriverId(),
                     const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                right: 8,
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Text(
-                                'Driver Phone',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                right: 8,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                _driverPhone,
-                                style: const TextStyle(fontSize: 15.5),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                    showDriverPhone(),
                     const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Text(
-                                'Expire Date Of Driver licence',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                              ),
-                              child: Text(
-                                _driverExpireDateOfLicence,
-                                style: const TextStyle(fontSize: 15),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                    showExpireDateOfLicence(),
                     const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                                top: 8,
-                              ),
-                              child: Text(
-                                'Driver Licence',
-                                style: GoogleFonts.lato(
-                                  color: const Color.fromARGB(255, 31, 40, 51),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 25,
-                                bottom: 8,
-                              ),
-                              child: CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  _driverLicenceLink,
-                                ),
-                                backgroundColor:
-                                    const Color.fromARGB(255, 31, 40, 51),
-                                radius: 60,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: _cancel,
-                          child: const Text('Cancel'),
-                        ),
-                        ElevatedButton(
-                          onPressed: _saveOffer,
-                          child: const Text('Save'),
-                        ),
-                      ],
-                    ),
+                    showDriverLicence(),
+                    showButtons(),
                   ],
                 ),
               ),
@@ -342,6 +129,264 @@ class _CreateOfferState extends State<CreateOffer> {
           ),
         ],
       ),
+    );
+  }
+
+  Row showButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        cancelButton(),
+        saveButton(),
+      ],
+    );
+  }
+
+  ElevatedButton saveButton() {
+    return ElevatedButton(
+      onPressed: _saveOffer,
+      child: const Text('Save'),
+    );
+  }
+
+  TextButton cancelButton() {
+    return TextButton(
+      onPressed: _cancel,
+      child: const Text('Cancel'),
+    );
+  }
+
+  Row showDriverLicence() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 25,
+                bottom: 8,
+                top: 8,
+              ),
+              child: Text(
+                'Driver Licence',
+                style: GoogleFonts.lato(
+                  color: const Color.fromARGB(255, 31, 40, 51),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 25,
+                bottom: 8,
+              ),
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(
+                  _driverLicenceLink,
+                ),
+                backgroundColor: const Color.fromARGB(255, 31, 40, 51),
+                radius: 60,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Row showExpireDateOfLicence() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 25,
+                bottom: 8,
+                top: 8,
+              ),
+              child: Text(
+                'Expire Date Of Driver licence',
+                style: GoogleFonts.lato(
+                  color: const Color.fromARGB(255, 31, 40, 51),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 25,
+                bottom: 8,
+              ),
+              child: Text(
+                _driverExpireDateOfLicence,
+                style: const TextStyle(fontSize: 15),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Row showDriverPhone() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 8,
+                bottom: 8,
+                top: 8,
+              ),
+              child: Text(
+                'Driver Phone',
+                style: GoogleFonts.lato(
+                  color: const Color.fromARGB(255, 31, 40, 51),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 8,
+                bottom: 8,
+              ),
+              child: Text(
+                _driverPhone,
+                style: const TextStyle(fontSize: 15.5),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Row showDriverId() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 8,
+                bottom: 8,
+                top: 8,
+              ),
+              child: Text(
+                'Driver Id',
+                style: GoogleFonts.lato(
+                  color: const Color.fromARGB(255, 31, 40, 51),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 25,
+                right: 8,
+                bottom: 8,
+              ),
+              child: Text(
+                driverId,
+                style: const TextStyle(fontSize: 15.5),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Row showDriverNameAndSurname() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        driverName(),
+        const SizedBox(width: 100),
+        driverSurname(),
+      ],
+    );
+  }
+
+  Column driverSurname() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(
+            bottom: 8,
+            top: 40,
+          ),
+          child: Text(
+            'Driver Surname',
+            style: GoogleFonts.lato(
+              color: const Color.fromARGB(255, 31, 40, 51),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+            bottom: 8,
+          ),
+          child: Text(
+            _driverSurname,
+            style: const TextStyle(fontSize: 16),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Column driverName() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(
+            left: 25,
+            bottom: 8,
+            top: 40,
+          ),
+          child: Text(
+            'Driver Name',
+            style: GoogleFonts.lato(
+              color: const Color.fromARGB(255, 31, 40, 51),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+            left: 25,
+            bottom: 8,
+          ),
+          child: Text(
+            _driverName,
+            style: const TextStyle(fontSize: 16),
+          ),
+        ),
+      ],
     );
   }
 }

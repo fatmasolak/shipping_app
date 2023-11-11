@@ -194,74 +194,15 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            TextFormField(
-                              decoration: const InputDecoration(
-                                labelText: 'Email Address',
-                              ),
-                              keyboardType: TextInputType.emailAddress,
-                              autocorrect: false,
-                              textCapitalization: TextCapitalization.none,
-                              validator: (value) {
-                                if (value == null ||
-                                    value.trim().isEmpty ||
-                                    !value.contains('@')) {
-                                  return 'Please enter a valid email address';
-                                }
-
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredEmail = value!;
-                                //we know that value is not null because we validate it
-                              },
-                            ),
+                            emailAddressField(),
                             const SizedBox(height: 12),
-                            TextFormField(
-                              decoration: const InputDecoration(
-                                labelText: 'Password',
-                              ),
-                              enableSuggestions: false,
-                              obscureText: true,
-                              validator: (value) {
-                                if (value == null ||
-                                    value.trim().isEmpty ||
-                                    value.trim().length < 6) {
-                                  return 'Password must be at least 6 characters long.';
-                                }
-
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredPassword = value!;
-                              },
-                            ),
+                            passwordField(),
                             const SizedBox(height: 20),
                             if (_isAuthenticating)
                               const CircularProgressIndicator(),
-                            if (!_isAuthenticating)
-                              ElevatedButton(
-                                onPressed: _submit,
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.black,
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 102, 252, 241),
-                                ),
-                                child: Text(_isLogin ? 'Login' : 'Signup'),
-                              ),
+                            if (!_isAuthenticating) loginSignupButton(),
                             const SizedBox(height: 12),
-                            if (!_isAuthenticating)
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _isLogin = !_isLogin;
-                                    _isRegister = false;
-                                    _isSelected = false;
-                                  });
-                                },
-                                child: Text(_isLogin
-                                    ? 'Create an account'
-                                    : 'I already have an acoount'),
-                              ),
+                            if (!_isAuthenticating) createAccountField(),
                           ],
                         ),
                       ),
@@ -269,70 +210,146 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
               if (!_isLogin && !_isSelected)
-                Container(
-                  width: 300,
-                  height: 200,
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(150, 11, 12, 16),
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 30,
-                      bottom: 30,
-                      left: 10,
-                      right: 10,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _isSelected = true;
-                              _isRegister = true;
-                              _selectedUserType = 'Driver';
-                            });
-
-                            _awaitReturnDriverValue(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.transparent,
-                            side: const BorderSide(
-                                color: Color.fromARGB(255, 102, 252, 241),
-                                width: 2),
-                          ),
-                          child: const Text('Driver'),
-                        ),
-                        const SizedBox(height: 40),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _isSelected = true;
-                              _isRegister = true;
-                              _selectedUserType = 'Payloader';
-                            });
-
-                            _awaitReturnPayloaderValue(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.transparent,
-                            side: const BorderSide(
-                                color: Color.fromARGB(255, 102, 252, 241),
-                                width: 2),
-                          ),
-                          child: const Text('Payloader'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                driverOrPayloaderSelection(context),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Container driverOrPayloaderSelection(BuildContext context) {
+    return Container(
+      width: 300,
+      height: 200,
+      decoration: const BoxDecoration(
+        color: Color.fromARGB(150, 11, 12, 16),
+        borderRadius: BorderRadius.all(Radius.circular(30)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 30,
+          bottom: 30,
+          left: 10,
+          right: 10,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            driverUserButton(context),
+            const SizedBox(height: 40),
+            payloaderUserButton(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  ElevatedButton payloaderUserButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          _isSelected = true;
+          _isRegister = true;
+          _selectedUserType = 'Payloader';
+        });
+
+        _awaitReturnPayloaderValue(context);
+      },
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        side: const BorderSide(
+            color: Color.fromARGB(255, 102, 252, 241), width: 2),
+      ),
+      child: const Text('Payloader'),
+    );
+  }
+
+  ElevatedButton driverUserButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          _isSelected = true;
+          _isRegister = true;
+          _selectedUserType = 'Driver';
+        });
+
+        _awaitReturnDriverValue(context);
+      },
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        side: const BorderSide(
+            color: Color.fromARGB(255, 102, 252, 241), width: 2),
+      ),
+      child: const Text('Driver'),
+    );
+  }
+
+  TextButton createAccountField() {
+    return TextButton(
+      onPressed: () {
+        setState(() {
+          _isLogin = !_isLogin;
+          _isRegister = false;
+          _isSelected = false;
+        });
+      },
+      child: Text(_isLogin ? 'Create an account' : 'I already have an acoount'),
+    );
+  }
+
+  ElevatedButton loginSignupButton() {
+    return ElevatedButton(
+      onPressed: _submit,
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 102, 252, 241),
+      ),
+      child: Text(_isLogin ? 'Login' : 'Signup'),
+    );
+  }
+
+  TextFormField passwordField() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        labelText: 'Password',
+      ),
+      enableSuggestions: false,
+      obscureText: true,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty || value.trim().length < 6) {
+          return 'Password must be at least 6 characters long.';
+        }
+
+        return null;
+      },
+      onSaved: (value) {
+        _enteredPassword = value!;
+      },
+    );
+  }
+
+  TextFormField emailAddressField() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        labelText: 'Email Address',
+      ),
+      keyboardType: TextInputType.emailAddress,
+      autocorrect: false,
+      textCapitalization: TextCapitalization.none,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty || !value.contains('@')) {
+          return 'Please enter a valid email address';
+        }
+
+        return null;
+      },
+      onSaved: (value) {
+        _enteredEmail = value!;
+        //we know that value is not null because we validate it
+      },
     );
   }
 

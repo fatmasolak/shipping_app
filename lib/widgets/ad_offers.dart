@@ -37,13 +37,6 @@ class _AdOffersState extends State<AdOffers> {
                       ),
                     );
 
-                    ScaffoldMessenger.of(context).clearSnackBars();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Offer has approved.'),
-                      ),
-                    );
-
                     setState(() {
                       if (result) {
                         _isApproved = true;
@@ -53,66 +46,7 @@ class _AdOffersState extends State<AdOffers> {
                   child: Card(
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 8,
-                                    top: 8,
-                                  ),
-                                  child: Text(
-                                    'Driver Name',
-                                    style: GoogleFonts.lato(
-                                      color:
-                                          const Color.fromARGB(255, 31, 40, 51),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 8,
-                                  ),
-                                  child:
-                                      Text(widget.adOffers[index].driverName),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 100),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 8,
-                                    top: 8,
-                                  ),
-                                  child: Text(
-                                    'Driver Surname',
-                                    style: GoogleFonts.lato(
-                                      color:
-                                          const Color.fromARGB(255, 31, 40, 51),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 8,
-                                  ),
-                                  child: Text(
-                                      widget.adOffers[index].driverSurname),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                        driverInformations(index),
                       ],
                     ),
                   ),
@@ -122,5 +56,72 @@ class _AdOffersState extends State<AdOffers> {
           }
           return const SizedBox();
         });
+  }
+
+  Row driverInformations(int index) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        driverName(index),
+        const SizedBox(width: 100),
+        driverSurname(index),
+      ],
+    );
+  }
+
+  Column driverSurname(int index) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(
+            bottom: 8,
+            top: 8,
+          ),
+          child: Text(
+            'Driver Surname',
+            style: GoogleFonts.lato(
+              color: const Color.fromARGB(255, 31, 40, 51),
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+            bottom: 8,
+          ),
+          child: Text(widget.adOffers[index].driverSurname),
+        ),
+      ],
+    );
+  }
+
+  Column driverName(int index) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(
+            bottom: 8,
+            top: 8,
+          ),
+          child: Text(
+            'Driver Name',
+            style: GoogleFonts.lato(
+              color: const Color.fromARGB(255, 31, 40, 51),
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+            bottom: 8,
+          ),
+          child: Text(widget.adOffers[index].driverName),
+        ),
+      ],
+    );
   }
 }

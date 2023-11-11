@@ -174,6 +174,8 @@ class _ApprovedOffersState extends State<ApprovedOffers> {
           onError: (e) => print("Error updating document $e"),
         );
 
+    _loadOffers();
+
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shipping_app/enums/value_enum.dart';
 import 'package:shipping_app/models/ad.dart';
+import 'package:shipping_app/widgets/create_app_bar.dart';
 import 'package:shipping_app/widgets/update_date.dart';
 import 'package:shipping_app/widgets/update_value.dart';
 
@@ -20,16 +21,7 @@ class _CreateAdState extends State<UpdateAd> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(
-          color: Colors.white, //change your color here
-        ),
-        backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-        title: const Text(
-          'Update Ad',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
+      appBar: const CreateAppBar(header: 'Update Ad', isShowing: false),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: Center(
@@ -37,227 +29,255 @@ class _CreateAdState extends State<UpdateAd> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UpdateValue(
-                                  ad: widget.ad, value: Values.departure),
-                            ),
-                          );
-
-                          Navigator.pop(context, result);
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Departure',
-                              style: GoogleFonts.lato(
-                                color: const Color.fromARGB(255, 31, 40, 51),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              widget.ad.departure,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 65),
-                      const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                              left: 8,
-                              right: 8,
-                              bottom: 8,
-                              top: 10,
-                            ),
-                            child: Icon(
-                              Icons.local_shipping,
-                              color: Color.fromARGB(255, 31, 40, 51),
-                              size: 27,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 65),
-                      ElevatedButton(
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UpdateValue(
-                                  ad: widget.ad, value: Values.arrival),
-                            ),
-                          );
-
-                          Navigator.pop(context, result);
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'Arrival',
-                              style: GoogleFonts.lato(
-                                color: const Color.fromARGB(255, 31, 40, 51),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              widget.ad.arrival,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  updateDepartureAndArrival(context),
                   const SizedBox(height: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UpdateDate(
-                                  ad: widget.ad, value: Values.departureDate),
-                            ),
-                          );
-
-                          Navigator.pop(context, result);
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Departure Date',
-                              style: GoogleFonts.lato(
-                                color: const Color.fromARGB(255, 31, 40, 51),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              widget.ad.departureDate,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  updateDepartureDate(context),
                   const SizedBox(height: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UpdateDate(
-                                  ad: widget.ad, value: Values.arrivalDate),
-                            ),
-                          );
-
-                          Navigator.pop(context, result);
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Arrival date',
-                              style: GoogleFonts.lato(
-                                color: const Color.fromARGB(255, 31, 40, 51),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              widget.ad.arrivalDate,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  updateArrivalDate(context),
                   const SizedBox(height: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UpdateValue(
-                                  ad: widget.ad, value: Values.loadContent),
-                            ),
-                          );
-
-                          Navigator.pop(context, result);
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Load Content',
-                              style: GoogleFonts.lato(
-                                color: const Color.fromARGB(255, 31, 40, 51),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              widget.ad.loadContent,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  updateLoadContent(context),
                   const SizedBox(height: 40),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UpdateValue(
-                                  ad: widget.ad, value: Values.cost),
-                            ),
-                          );
-
-                          Navigator.pop(context, result);
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Cost',
-                              style: GoogleFonts.lato(
-                                color: const Color.fromARGB(255, 31, 40, 51),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              '${widget.ad.cost}',
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  updateCost(context),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Row updateCost(BuildContext context) {
+    return Row(
+      children: [
+        ElevatedButton(
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    UpdateValue(ad: widget.ad, value: Values.cost),
+              ),
+            );
+
+            Navigator.pop(context, result);
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Cost',
+                style: GoogleFonts.lato(
+                  color: const Color.fromARGB(255, 31, 40, 51),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                '${widget.ad.cost}',
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Row updateLoadContent(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        ElevatedButton(
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    UpdateValue(ad: widget.ad, value: Values.loadContent),
+              ),
+            );
+
+            Navigator.pop(context, result);
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Load Content',
+                style: GoogleFonts.lato(
+                  color: const Color.fromARGB(255, 31, 40, 51),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                widget.ad.loadContent,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Row updateArrivalDate(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        ElevatedButton(
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    UpdateDate(ad: widget.ad, value: Values.arrivalDate),
+              ),
+            );
+
+            Navigator.pop(context, result);
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Arrival date',
+                style: GoogleFonts.lato(
+                  color: const Color.fromARGB(255, 31, 40, 51),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                widget.ad.arrivalDate,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Row updateDepartureDate(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        ElevatedButton(
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    UpdateDate(ad: widget.ad, value: Values.departureDate),
+              ),
+            );
+
+            Navigator.pop(context, result);
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Departure Date',
+                style: GoogleFonts.lato(
+                  color: const Color.fromARGB(255, 31, 40, 51),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                widget.ad.departureDate,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Row updateDepartureAndArrival(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        departureUpdateButton(context),
+        const SizedBox(width: 65),
+        const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                left: 8,
+                right: 8,
+                bottom: 8,
+                top: 10,
+              ),
+              child: Icon(
+                Icons.local_shipping,
+                color: Color.fromARGB(255, 31, 40, 51),
+                size: 27,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(width: 65),
+        arrivalUpdateButton(context),
+      ],
+    );
+  }
+
+  ElevatedButton arrivalUpdateButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                UpdateValue(ad: widget.ad, value: Values.arrival),
+          ),
+        );
+
+        Navigator.pop(context, result);
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            'Arrival',
+            style: GoogleFonts.lato(
+              color: const Color.fromARGB(255, 31, 40, 51),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            widget.ad.arrival,
+          ),
+        ],
+      ),
+    );
+  }
+
+  ElevatedButton departureUpdateButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                UpdateValue(ad: widget.ad, value: Values.departure),
+          ),
+        );
+
+        Navigator.pop(context, result);
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Departure',
+            style: GoogleFonts.lato(
+              color: const Color.fromARGB(255, 31, 40, 51),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            widget.ad.departure,
+          ),
+        ],
       ),
     );
   }

@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shipping_app/screens/driver_screens/approved_offers.dart';
 import 'package:shipping_app/screens/driver_screens/completed_offers.dart';
 import 'package:shipping_app/screens/driver_screens/my_offers.dart';
 import 'package:shipping_app/screens/driver_screens/waiting_ads.dart';
+import 'package:shipping_app/widgets/create_app_bar.dart';
 
 class DriverLoggedInScreen extends StatefulWidget {
   const DriverLoggedInScreen({super.key});
@@ -33,43 +34,7 @@ class _DriverLoggedInScreenState extends State<DriverLoggedInScreen> {
   Widget build(context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-        title: const Text(
-          'Shipping',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: const Text('Logout'),
-                content: const Text('Are you sure you want to log out?'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, 'No'),
-                    child: const Text('No'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      FirebaseAuth.instance.signOut();
-                      Navigator.pop(context, 'No');
-                    },
-                    child: const Text('Yes'),
-                  ),
-                ],
-              ),
-            ),
-            icon: const Icon(
-              Icons.exit_to_app,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
+      appBar: const CreateAppBar(header: 'Shipping', isShowing: true),
       body: StreamBuilder<QuerySnapshot>(
         stream:
             FirebaseFirestore.instance.collection('driverOffers').snapshots(),
