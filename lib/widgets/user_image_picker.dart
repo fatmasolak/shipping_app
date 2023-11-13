@@ -75,7 +75,7 @@ class _UserImagePickerState extends State<UserImagePicker> {
           label: Text(
             _pickedImageFile == null ? 'Add Image' : 'Added',
             style: const TextStyle(
-              color: Color.fromARGB(255, 225, 226, 228),
+              color: Colors.black,
             ),
           ),
         ),

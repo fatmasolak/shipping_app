@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:shipping_app/constants.dart';
 
 import 'package:shipping_app/models/driver.dart';
 import 'package:shipping_app/widgets/create_app_bar.dart';
@@ -57,179 +58,217 @@ class _DriverCredentialsState extends State<DriverCredentials> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 31, 40, 51),
       appBar:
           const CreateAppBar(header: 'Driver Credentials', isShowing: false),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      driverNameField(),
-                      const SizedBox(height: 12),
-                      driverSurnameField(),
-                      const SizedBox(height: 12),
-                      driverPhoneField(),
-                      const SizedBox(height: 40),
-                      expireDateOfLicenceField(context),
-                      const SizedBox(height: 20),
-                      UserImagePicker(
-                        onPickImage: (pickedImage) {
-                          _driverLicenceImage = pickedImage;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      saveButton(),
-                    ],
-                  ),
+      body: Container(
+        height: size.height,
+        width: double.infinity,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    driverNameField(size),
+                    driverSurnameField(size),
+                    driverPhoneField(size),
+                    const SizedBox(height: 20),
+                    expireDateOfLicenceField(context, size),
+                    UserImagePicker(
+                      onPickImage: (pickedImage) {
+                        _driverLicenceImage = pickedImage;
+                      },
+                    ),
+                    const SizedBox(height: 40),
+                    saveButton(size),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  ElevatedButton saveButton() {
-    return ElevatedButton(
-      onPressed: _save,
-      style: ElevatedButton.styleFrom(
-        foregroundColor: const Color.fromARGB(255, 31, 40, 51),
-        backgroundColor: const Color.fromARGB(255, 102, 252, 241),
+  Container saveButton(Size size) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: SizedBox(
+        width: size.width * 0.8,
+        height: size.height * 0.06,
+        child: ElevatedButton(
+          onPressed: _save,
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 5,
+            ),
+            foregroundColor: Colors.white,
+            backgroundColor: primaryColor,
+          ),
+          child: const Text('Save'),
+        ),
       ),
-      child: const Text('Save'),
     );
   }
 
-  Column expireDateOfLicenceField(BuildContext context) {
-    return Column(
-      children: [
-        const Text(
-          'Expire Date of Driver Licence',
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            color: Color.fromARGB(255, 225, 226, 228),
-            fontSize: 14.5,
+  Container expireDateOfLicenceField(BuildContext context, Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
+      ),
+      child: Column(
+        children: [
+          const Text(
+            'Expire Date of Driver Licence',
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 14.5,
+            ),
           ),
-        ),
-        const SizedBox(height: 5),
-        Padding(
-          padding: const EdgeInsets.only(left: 100),
-          child: Row(
-            children: [
-              TextButton(
-                onPressed: () {
-                  showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2023),
-                    lastDate: DateTime(2101),
-                  ).then((selectedDate) {
-                    if (selectedDate != null) {
-                      setState(() {
-                        _pickedDate =
-                            "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
-                      });
-                    }
-                  });
-                },
-                child: const Text(
-                  'Pick Date',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 102, 252, 241),
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 100,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    _pickedDate,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      color: Color.fromARGB(255, 225, 226, 228),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 90,
+              vertical: 5,
+            ),
+            child: Row(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2023),
+                      lastDate: DateTime(2101),
+                    ).then((selectedDate) {
+                      if (selectedDate != null) {
+                        setState(() {
+                          _pickedDate =
+                              "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+                        });
+                      }
+                    });
+                  },
+                  child: const Text(
+                    'Pick Date',
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontSize: 13,
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-            ],
+                SizedBox(
+                  width: 100,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      _pickedDate,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Container driverPhoneField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
+      ),
+      child: TextFormField(
+        decoration: const InputDecoration(
+          hintText: 'Phone',
+          focusColor: primaryColor,
         ),
-      ],
+        keyboardType: TextInputType.phone,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter your phone number';
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          _enteredPhone = value!;
+        },
+      ),
     );
   }
 
-  TextFormField driverPhoneField() {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white),
-      decoration: const InputDecoration(
-        labelStyle: TextStyle(color: Color.fromARGB(255, 225, 226, 228)),
-        labelText: 'Phone',
+  Container driverSurnameField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
       ),
-      keyboardType: TextInputType.phone,
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Please enter your phone number';
-        }
+      child: TextFormField(
+        decoration: const InputDecoration(
+          hintText: 'Surname',
+          focusColor: primaryColor,
+        ),
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter your surname';
+          }
 
-        return null;
-      },
-      onSaved: (value) {
-        _enteredPhone = value!;
-      },
+          return null;
+        },
+        onSaved: (value) {
+          _enteredSurname = value!;
+        },
+      ),
     );
   }
 
-  TextFormField driverSurnameField() {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white),
-      decoration: const InputDecoration(
-        labelStyle: TextStyle(color: Color.fromARGB(255, 225, 226, 228)),
-        labelText: 'Surname',
+  Container driverNameField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
       ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Please enter your surname';
-        }
+      child: TextFormField(
+        decoration: const InputDecoration(
+          hintText: 'Name',
+          focusColor: primaryColor,
+        ),
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter your name';
+          }
 
-        return null;
-      },
-      onSaved: (value) {
-        _enteredSurname = value!;
-      },
-    );
-  }
-
-  TextFormField driverNameField() {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white),
-      decoration: const InputDecoration(
-        labelStyle: TextStyle(color: Color.fromARGB(255, 225, 226, 228)),
-        labelText: 'Name',
+          return null;
+        },
+        onSaved: (value) {
+          _enteredName = value!;
+          //we know that value is not null because we validate it
+        },
       ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Please enter your name';
-        }
-
-        return null;
-      },
-      onSaved: (value) {
-        _enteredName = value!;
-        //we know that value is not null because we validate it
-      },
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:shipping_app/constants.dart';
 
 import 'package:shipping_app/models/driver.dart';
 import 'package:shipping_app/models/payloader.dart';
@@ -176,41 +177,80 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    //this size provide us total height and width of our screen
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Container(
+          height: size.height,
+          width: double.infinity,
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              if (_isLogin || _isRegister)
-                Card(
-                  margin: const EdgeInsets.all(20),
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Form(
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Image.asset(
+                  "assets/images/main_top.png",
+                  width: size.width * 0.7,
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Image.asset(
+                  "assets/images/main_bottom.png",
+                  width: size.width * 0.6,
+                ),
+              ),
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (_isLogin || _isRegister)
+                      Text(
+                        _isLogin ? 'LOGIN' : 'SIGNUP',
+                        style: const TextStyle(
+                          color: secondaryColor,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    if (_isLogin || _isRegister)
+                      _isLogin
+                          ? Image.asset(
+                              "assets/images/shipApp_login.png",
+                              height: size.height * 0.45,
+                              width: size.width,
+                            )
+                          : Container(
+                              margin: const EdgeInsets.symmetric(vertical: 60),
+                              child: Image.asset(
+                                "assets/images/shipApp_signup.png",
+                                height: size.height * 0.2,
+                                width: size.width,
+                              ),
+                            ),
+                    if (_isLogin || _isRegister)
+                      Form(
                         key: _formKey,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            emailAddressField(),
-                            const SizedBox(height: 12),
-                            passwordField(),
-                            const SizedBox(height: 20),
+                            emailAddressField(size),
+                            passwordField(size),
                             if (_isAuthenticating)
                               const CircularProgressIndicator(),
-                            if (!_isAuthenticating) loginSignupButton(),
-                            const SizedBox(height: 12),
+                            if (!_isAuthenticating) loginSignupButton(size),
                             if (!_isAuthenticating) createAccountField(),
                           ],
                         ),
                       ),
-                    ),
-                  ),
+                    if (!_isLogin && !_isSelected)
+                      driverOrPayloaderSelection(context, size),
+                  ],
                 ),
-              if (!_isLogin && !_isSelected)
-                driverOrPayloaderSelection(context),
+              )
             ],
           ),
         ),
@@ -218,72 +258,92 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Container driverOrPayloaderSelection(BuildContext context) {
+  Column driverOrPayloaderSelection(BuildContext context, Size size) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(
+          "assets/images/shipApp_selection.png",
+          height: size.height * 0.5,
+          width: size.width,
+        ),
+        driverUserButton(context, size),
+        payloaderUserButton(context, size),
+      ],
+    );
+  }
+
+  Container payloaderUserButton(BuildContext context, Size size) {
     return Container(
-      width: 300,
-      height: 200,
-      decoration: const BoxDecoration(
-        color: Color.fromARGB(150, 11, 12, 16),
-        borderRadius: BorderRadius.all(Radius.circular(30)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(
-          top: 30,
-          bottom: 30,
-          left: 10,
-          right: 10,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            driverUserButton(context),
-            const SizedBox(height: 40),
-            payloaderUserButton(context),
-          ],
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: SizedBox(
+        width: size.width * 0.8,
+        height: size.height * 0.06,
+        child: ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _isSelected = true;
+              _isRegister = true;
+              _selectedUserType = 'Payloader';
+            });
+
+            _awaitReturnPayloaderValue(context);
+          },
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 5,
+            ),
+            shape: RoundedRectangleBorder(
+              //to set border radius to button
+              borderRadius: BorderRadius.circular(29),
+            ),
+            foregroundColor: Colors.black,
+            backgroundColor: thirdColor,
+          ),
+          child: const Text(
+            'Payloader',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ),
     );
   }
 
-  ElevatedButton payloaderUserButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          _isSelected = true;
-          _isRegister = true;
-          _selectedUserType = 'Payloader';
-        });
+  Container driverUserButton(BuildContext context, Size size) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: SizedBox(
+        width: size.width * 0.8,
+        height: size.height * 0.06,
+        child: ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _isSelected = true;
+              _isRegister = true;
+              _selectedUserType = 'Driver';
+            });
 
-        _awaitReturnPayloaderValue(context);
-      },
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.transparent,
-        side: const BorderSide(
-            color: Color.fromARGB(255, 102, 252, 241), width: 2),
+            _awaitReturnDriverValue(context);
+          },
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 5,
+            ),
+            shape: RoundedRectangleBorder(
+              //to set border radius to button
+              borderRadius: BorderRadius.circular(29),
+            ),
+            foregroundColor: Colors.black,
+            backgroundColor: secondaryColor,
+          ),
+          child: const Text(
+            'Driver',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
       ),
-      child: const Text('Payloader'),
-    );
-  }
-
-  ElevatedButton driverUserButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          _isSelected = true;
-          _isRegister = true;
-          _selectedUserType = 'Driver';
-        });
-
-        _awaitReturnDriverValue(context);
-      },
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.transparent,
-        side: const BorderSide(
-            color: Color.fromARGB(255, 102, 252, 241), width: 2),
-      ),
-      child: const Text('Driver'),
     );
   }
 
@@ -296,60 +356,124 @@ class _AuthScreenState extends State<AuthScreen> {
           _isSelected = false;
         });
       },
-      child: Text(_isLogin ? 'Create an account' : 'I already have an acoount'),
+      child: Text(
+        _isLogin ? 'Create an account' : 'I already have an acoount',
+        style: const TextStyle(
+          color: primaryColor,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
-  ElevatedButton loginSignupButton() {
-    return ElevatedButton(
-      onPressed: _submit,
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black,
-        backgroundColor: const Color.fromARGB(255, 102, 252, 241),
+  Container loginSignupButton(Size size) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: SizedBox(
+        width: size.width * 0.8,
+        height: size.height * 0.06,
+        child: ElevatedButton(
+          onPressed: _submit,
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 5,
+            ),
+            shape: RoundedRectangleBorder(
+              //to set border radius to button
+              borderRadius: BorderRadius.circular(29),
+            ),
+            foregroundColor: Colors.black,
+            backgroundColor: thirdColor,
+          ),
+          child: Text(
+            _isLogin ? 'LOGIN' : 'SIGNUP',
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
       ),
-      child: Text(_isLogin ? 'Login' : 'Signup'),
     );
   }
 
-  TextFormField passwordField() {
-    return TextFormField(
-      decoration: const InputDecoration(
-        labelText: 'Password',
+  Container passwordField(Size size) {
+    return Container(
+      width: size.width * 0.8,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
       ),
-      enableSuggestions: false,
-      obscureText: true,
-      validator: (value) {
-        if (value == null || value.trim().isEmpty || value.trim().length < 6) {
-          return 'Password must be at least 6 characters long.';
-        }
+      decoration: BoxDecoration(
+        color: primaryLightColor,
+        borderRadius: BorderRadius.circular(29),
+      ),
+      child: TextFormField(
+        decoration: const InputDecoration(
+          icon: Icon(
+            Icons.lock,
+            color: primaryColor,
+          ),
+          suffixIcon: Icon(
+            Icons.visibility,
+            color: primaryColor,
+          ),
+          hintText: 'Password',
+          border: InputBorder.none,
+        ),
+        enableSuggestions: false,
+        obscureText: true,
+        validator: (value) {
+          if (value == null ||
+              value.trim().isEmpty ||
+              value.trim().length < 6) {
+            return 'Password must be at least 6 characters long.';
+          }
 
-        return null;
-      },
-      onSaved: (value) {
-        _enteredPassword = value!;
-      },
+          return null;
+        },
+        onSaved: (value) {
+          _enteredPassword = value!;
+        },
+      ),
     );
   }
 
-  TextFormField emailAddressField() {
-    return TextFormField(
-      decoration: const InputDecoration(
-        labelText: 'Email Address',
+  Container emailAddressField(Size size) {
+    return Container(
+      width: size.width * 0.8,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
       ),
-      keyboardType: TextInputType.emailAddress,
-      autocorrect: false,
-      textCapitalization: TextCapitalization.none,
-      validator: (value) {
-        if (value == null || value.trim().isEmpty || !value.contains('@')) {
-          return 'Please enter a valid email address';
-        }
+      decoration: BoxDecoration(
+        color: primaryLightColor,
+        borderRadius: BorderRadius.circular(29),
+      ),
+      child: TextFormField(
+        decoration: const InputDecoration(
+          icon: Icon(
+            Icons.person,
+            color: primaryColor,
+          ),
+          hintText: 'Email Address',
+          border: InputBorder.none,
+        ),
+        keyboardType: TextInputType.emailAddress,
+        autocorrect: false,
+        textCapitalization: TextCapitalization.none,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty || !value.contains('@')) {
+            return 'Please enter a valid email address';
+          }
 
-        return null;
-      },
-      onSaved: (value) {
-        _enteredEmail = value!;
-        //we know that value is not null because we validate it
-      },
+          return null;
+        },
+        onSaved: (value) {
+          _enteredEmail = value!;
+          //we know that value is not null because we validate it
+        },
+      ),
     );
   }
 

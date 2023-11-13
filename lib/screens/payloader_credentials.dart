@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shipping_app/constants.dart';
 import 'package:shipping_app/models/payloader.dart';
 import 'package:shipping_app/widgets/create_app_bar.dart';
 
@@ -53,157 +54,198 @@ class _PayloaderCredentialsState extends State<PayloaderCredentials> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 31, 40, 51),
       appBar:
           const CreateAppBar(header: 'Payloader Credentials', isShowing: false),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      payloaderNameField(),
-                      const SizedBox(height: 12),
-                      payloaderSurnameField(),
-                      const SizedBox(height: 12),
-                      payloaderPhoneField(),
-                      const SizedBox(height: 12),
-                      companyNameField(),
-                      const SizedBox(height: 12),
-                      companyEmailField(),
-                      const SizedBox(height: 20),
-                      saveButton(),
-                    ],
-                  ),
+      body: Container(
+        height: size.height,
+        width: double.infinity,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    payloaderNameField(size),
+                    payloaderSurnameField(size),
+                    payloaderPhoneField(size),
+                    companyNameField(size),
+                    companyEmailField(size),
+                    const SizedBox(height: 40),
+                    saveButton(size),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  ElevatedButton saveButton() {
-    return ElevatedButton(
-      onPressed: _save,
-      style: ElevatedButton.styleFrom(
-        foregroundColor: const Color.fromARGB(255, 31, 40, 51),
-        backgroundColor: const Color.fromARGB(255, 102, 252, 241),
+  Container saveButton(Size size) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: SizedBox(
+        width: size.width * 0.8,
+        height: size.height * 0.06,
+        child: ElevatedButton(
+          onPressed: _save,
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 5,
+            ),
+            foregroundColor: Colors.white,
+            backgroundColor: primaryColor,
+          ),
+          child: const Text('Save'),
+        ),
       ),
-      child: const Text('Save'),
     );
   }
 
-  TextFormField companyEmailField() {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white),
-      decoration: const InputDecoration(
-        labelStyle: TextStyle(color: Color.fromARGB(255, 225, 226, 228)),
-        labelText: 'Company Email',
+  Container companyEmailField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
       ),
-      keyboardType: TextInputType.emailAddress,
-      autocorrect: false,
-      textCapitalization: TextCapitalization.none,
-      validator: (value) {
-        if (value == null || value.trim().isEmpty || !value.contains('@')) {
-          return 'Please enter a valid email address';
-        }
+      child: TextFormField(
+        decoration: const InputDecoration(
+          hintText: 'Company Email',
+          focusColor: primaryColor,
+        ),
+        keyboardType: TextInputType.emailAddress,
+        autocorrect: false,
+        textCapitalization: TextCapitalization.none,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty || !value.contains('@')) {
+            return 'Please enter a valid email address';
+          }
 
-        return null;
-      },
-      onSaved: (value) {
-        _enteredCompanyEmail = value!;
-      },
+          return null;
+        },
+        onSaved: (value) {
+          _enteredCompanyEmail = value!;
+        },
+      ),
     );
   }
 
-  TextFormField companyNameField() {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white),
-      decoration: const InputDecoration(
-        labelStyle: TextStyle(color: Color.fromARGB(255, 225, 226, 228)),
-        labelText: 'Company Name',
+  Container companyNameField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
       ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Please enter your company name';
-        }
+      child: TextFormField(
+        decoration: const InputDecoration(
+          hintText: 'Company Name',
+          focusColor: primaryColor,
+        ),
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter your company name';
+          }
 
-        return null;
-      },
-      onSaved: (value) {
-        _enteredCompanyName = value!;
-      },
+          return null;
+        },
+        onSaved: (value) {
+          _enteredCompanyName = value!;
+        },
+      ),
     );
   }
 
-  TextFormField payloaderPhoneField() {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white),
-      decoration: const InputDecoration(
-        labelStyle: TextStyle(color: Color.fromARGB(255, 225, 226, 228)),
-        labelText: 'Phone',
+  Container payloaderPhoneField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
       ),
-      keyboardType: TextInputType.phone,
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Please enter your phone number';
-        }
+      child: TextFormField(
+        decoration: const InputDecoration(
+          hintText: 'Phone',
+          focusColor: primaryColor,
+        ),
+        keyboardType: TextInputType.phone,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter your phone number';
+          }
 
-        return null;
-      },
-      onSaved: (value) {
-        _enteredPhone = value!;
-      },
+          return null;
+        },
+        onSaved: (value) {
+          _enteredPhone = value!;
+        },
+      ),
     );
   }
 
-  TextFormField payloaderSurnameField() {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white),
-      decoration: const InputDecoration(
-        labelStyle: TextStyle(color: Color.fromARGB(255, 225, 226, 228)),
-        labelText: 'Surname',
+  Container payloaderSurnameField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
       ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Please enter your surname';
-        }
+      child: TextFormField(
+        decoration: const InputDecoration(
+          hintText: 'Surname',
+          focusColor: primaryColor,
+        ),
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter your surname';
+          }
 
-        return null;
-      },
-      onSaved: (value) {
-        _enteredSurname = value!;
-      },
+          return null;
+        },
+        onSaved: (value) {
+          _enteredSurname = value!;
+        },
+      ),
     );
   }
 
-  TextFormField payloaderNameField() {
-    return TextFormField(
-      style: const TextStyle(color: Colors.white),
-      decoration: const InputDecoration(
-        labelStyle: TextStyle(color: Color.fromARGB(255, 225, 226, 228)),
-        labelText: 'Name',
+  Container payloaderNameField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
       ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Please enter your name';
-        }
+      child: TextFormField(
+        decoration: const InputDecoration(
+          hintText: 'Name',
+          focusColor: primaryColor,
+        ),
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter your name';
+          }
 
-        return null;
-      },
-      onSaved: (value) {
-        _enteredName = value!;
-        //we know that value is not null because we validate it
-      },
+          return null;
+        },
+        onSaved: (value) {
+          _enteredName = value!;
+          //we know that value is not null because we validate it
+        },
+      ),
     );
   }
 }

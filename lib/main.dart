@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shipping_app/constants.dart';
 import 'firebase_options.dart';
 
 import 'package:shipping_app/screens/driver_logged_in.dart';
@@ -24,11 +25,10 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Shipping',
-      theme: ThemeData().copyWith(
+      theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 197, 198, 199),
-        ),
+        primaryColor: primaryColor,
+        scaffoldBackgroundColor: Colors.white,
       ),
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
