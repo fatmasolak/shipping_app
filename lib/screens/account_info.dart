@@ -154,8 +154,7 @@ class _AccountInfoState extends State<AccountInfo> {
   Padding updateButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(
-        vertical: 15,
-        horizontal: 25,
+        horizontal: 35,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,

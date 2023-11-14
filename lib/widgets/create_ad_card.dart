@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shipping_app/constants.dart';
 import 'package:shipping_app/enums/pages_enum.dart';
 import 'package:shipping_app/models/ad.dart';
 
@@ -53,11 +54,27 @@ class _CreateAdCardState extends State<CreateAdCard> {
 
   ElevatedButton showCompleteButton() {
     return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 5,
+          ),
+          shape: RoundedRectangleBorder(
+            //to set border radius to button
+            borderRadius: BorderRadius.circular(29),
+          ),
+          backgroundColor: thirdColor,
+        ),
         onPressed: () {
           Ad ad = widget.ads[widget.index];
           widget.completeAd!(ad);
         },
-        child: const Text('Complete'));
+        child: const Text(
+          'Complete',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ));
   }
 
   Column adCost() {

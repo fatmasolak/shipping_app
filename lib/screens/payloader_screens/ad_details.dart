@@ -178,6 +178,30 @@ class _AdDetailsState extends State<AdDetails> {
         print('No data found');
       }
 
+      QuerySnapshot querySnapshotDeletedOffers =
+          await FirebaseFirestore.instance.collection('deletedOffers').get();
+
+      if (querySnapshotDeletedOffers.docs.isNotEmpty) {
+        for (var doc in querySnapshotDeletedOffers.docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Offer offer = Offer(
+            driverId: data['driverId'],
+            driverName: data['driverName'],
+            driverSurname: data['driverSurname'],
+            driverPhone: data['driverPhone'],
+            driverExpireDateOfLicence: data['driverExpireDateOfLicence'],
+            driverLicenceLink: data['driverLicence'],
+            offerId: data['offerId'],
+            adId: data['adId'],
+          );
+
+          loadedOffers.add(offer);
+        }
+      } else {
+        print('No data found');
+      }
+
       setState(() {
         _driverOffers = loadedOffers;
       });
@@ -344,6 +368,20 @@ class _AdDetailsState extends State<AdDetails> {
           ),
           TextButton(
             onPressed: () async {
+              await FirebaseFirestore.instance
+                  .collection('deletedAds')
+                  .doc(widget.ad.id)
+                  .set({
+                'departure': widget.ad.departure,
+                'arrival': widget.ad.arrival,
+                'departureDate': widget.ad.departureDate,
+                'arrivalDate': widget.ad.arrivalDate,
+                'loadContent': widget.ad.loadContent,
+                'cost': widget.ad.cost,
+                'adId': widget.ad.id,
+                'payloaderId': FirebaseAuth.instance.currentUser!.uid,
+              });
+
               FirebaseFirestore.instance
                   .collection('payloaderAds')
                   .doc(widget.ad.id)
@@ -359,6 +397,21 @@ class _AdDetailsState extends State<AdDetails> {
                       doc.data() as Map<String, dynamic>;
 
                   if (data['adId'] == widget.ad.id) {
+                    await FirebaseFirestore.instance
+                        .collection('deletedOffers')
+                        .doc(data['offerId'])
+                        .set({
+                      'driverId': data['driverId'],
+                      'driverName': data['driverName'],
+                      'driverSurname': data['driverSurname'],
+                      'driverPhone': data['driverPhone'],
+                      'driverExpireDateOfLicence':
+                          data['driverExpireDateOfLicence'],
+                      'driverLicence': data['driverLicence'],
+                      'offerId': data['offerId'],
+                      'adId': data['adId'],
+                    });
+
                     FirebaseFirestore.instance
                         .collection('driverOffers')
                         .doc(data['offerId'])
@@ -385,6 +438,7 @@ class _AdDetailsState extends State<AdDetails> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: CreateAppBar(
           header: widget.ad.id, isShowing: false, color: primaryColor),
@@ -409,19 +463,26 @@ class _AdDetailsState extends State<AdDetails> {
           ],
         ),
       ),
-      floatingActionButton: (widget.isDriver) ? giveOfferButton() : null,
+      floatingActionButton: (widget.isDriver) ? giveOfferButton(size) : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
-  Padding giveOfferButton() {
+  Padding giveOfferButton(Size size) {
     return Padding(
-      padding: const EdgeInsets.all(80.0),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 80,
+      ),
       child: SizedBox(
-        width: 400,
-        height: 50,
+        width: size.width * 0.6,
+        height: size.height * 0.06,
         child: FloatingActionButton(
-          backgroundColor: const Color.fromARGB(255, 31, 40, 51),
+          backgroundColor: !isOffered ? primaryColor : thirdColor,
+          shape: RoundedRectangleBorder(
+            //to set border radius to button
+            borderRadius: BorderRadius.circular(29),
+          ),
           onPressed: !isOffered ? _giveAnOffer : () {},
           child: Text(
             !isOffered ? 'Give an Offer' : 'Offer has already given',

@@ -123,6 +123,30 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
         print('No data found');
       }
 
+      QuerySnapshot querySnapshotDeletedAds =
+          await FirebaseFirestore.instance.collection('deletedAds').get();
+
+      if (querySnapshotDeletedAds.docs.isNotEmpty) {
+        for (var doc in querySnapshotDeletedAds.docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          Ad ad = Ad(
+            departure: data['departure'],
+            arrival: data['arrival'],
+            departureDate: data['departureDate'],
+            arrivalDate: data['arrivalDate'],
+            loadContent: data['loadContent'],
+            cost: data['cost'],
+            id: data['adId'],
+            offerId: '',
+          );
+
+          loadedAds.add(ad);
+        }
+      } else {
+        print('No data found');
+      }
+
       setState(() {
         _payloaderAds = loadedAds;
       });
