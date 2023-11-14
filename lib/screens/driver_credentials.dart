@@ -60,8 +60,8 @@ class _DriverCredentialsState extends State<DriverCredentials> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar:
-          const CreateAppBar(header: 'Driver Credentials', isShowing: false),
+      appBar: const CreateAppBar(
+          header: 'Driver Credentials', isShowing: false, color: primaryColor),
       body: Container(
         height: size.height,
         width: double.infinity,

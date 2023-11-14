@@ -56,8 +56,11 @@ class _PayloaderCredentialsState extends State<PayloaderCredentials> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar:
-          const CreateAppBar(header: 'Payloader Credentials', isShowing: false),
+      appBar: const CreateAppBar(
+        header: 'Payloader Credentials',
+        isShowing: false,
+        color: primaryColor,
+      ),
       body: Container(
         height: size.height,
         width: double.infinity,

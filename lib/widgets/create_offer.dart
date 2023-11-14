@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shipping_app/constants.dart';
 import 'package:shipping_app/widgets/create_app_bar.dart';
 
 class CreateOffer extends StatefulWidget {
@@ -103,7 +104,11 @@ class _CreateOfferState extends State<CreateOffer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CreateAppBar(header: 'Create New Offer', isShowing: false),
+      appBar: const CreateAppBar(
+        header: 'Create New Offer',
+        isShowing: false,
+        color: primaryColor,
+      ),
       body: Column(
         children: [
           Center(

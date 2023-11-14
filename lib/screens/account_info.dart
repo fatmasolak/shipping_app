@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shipping_app/constants.dart';
 import 'package:shipping_app/widgets/update_account_info.dart';
 
 class AccountInfo extends StatefulWidget {
@@ -130,22 +131,16 @@ class _AccountInfoState extends State<AccountInfo> {
         child: Column(
           children: [
             Center(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    nameAndSurname(),
-                    const SizedBox(height: 40),
-                    userId(),
-                    const SizedBox(height: 40),
-                    phone(),
-                    const SizedBox(height: 40),
-                    _isDriver ? expireDateOfDriverLicence() : companyName(),
-                    const SizedBox(height: 40),
-                    _isDriver ? driverLicence() : companyEmail(),
-                    updateButton(),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  nameAndSurname(),
+                  userId(),
+                  phone(),
+                  _isDriver ? expireDateOfDriverLicence() : companyName(),
+                  _isDriver ? driverLicence() : companyEmail(),
+                  updateButton(),
+                ],
               ),
             ),
           ],
@@ -156,321 +151,359 @@ class _AccountInfoState extends State<AccountInfo> {
     return content;
   }
 
-  Row updateButton() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        ElevatedButton(
-          onPressed: _updateInfo,
-          child: const Text('Update'),
-        ),
-      ],
+  Padding updateButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 25,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 5,
+              ),
+              shape: RoundedRectangleBorder(
+                //to set border radius to button
+                borderRadius: BorderRadius.circular(29),
+              ),
+              backgroundColor: thirdColor,
+            ),
+            onPressed: _updateInfo,
+            child: const Text(
+              'Update',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Row driverLicence() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Container driverLicence() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 15,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-                top: 8,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 50,
               ),
-              child: Text(
-                'Driver Licence',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-              ),
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(
-                  _driverLicence,
-                ),
-                backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-                radius: 60,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: Text(
+                      'Driver Licence',
+                      style: GoogleFonts.lato(
+                        color: const Color.fromARGB(255, 31, 40, 51),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      _driverLicence,
+                    ),
+                    backgroundColor: const Color.fromARGB(255, 31, 40, 51),
+                    radius: 60,
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  Row expireDateOfDriverLicence() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Container expireDateOfDriverLicence() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 15,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-                top: 8,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 50,
               ),
-              child: Text(
-                'Expire Date Of Driver licence',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-              ),
-              child: Text(
-                _expireDateOfLicence,
-                style: const TextStyle(fontSize: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: Text(
+                      'Expire Date Of Driver licence',
+                      style: GoogleFonts.lato(
+                        color: const Color.fromARGB(255, 31, 40, 51),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    _expireDateOfLicence,
+                    style: const TextStyle(fontSize: 15),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  Row companyEmail() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Container companyEmail() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 15,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-                top: 8,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 50,
               ),
-              child: Text(
-                'Company Email',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-              ),
-              child: Text(
-                _companyEmail,
-                style: const TextStyle(fontSize: 15.5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: Text(
+                      'Company Email',
+                      style: GoogleFonts.lato(
+                        color: const Color.fromARGB(255, 31, 40, 51),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    _companyEmail,
+                    style: const TextStyle(fontSize: 15.5),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  Row companyName() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Container companyName() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 15,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-                top: 8,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 50,
               ),
-              child: Text(
-                'Company Name',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-              ),
-              child: Text(
-                _companyName,
-                style: const TextStyle(fontSize: 15.5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: Text(
+                      'Company Name',
+                      style: GoogleFonts.lato(
+                        color: const Color.fromARGB(255, 31, 40, 51),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    _companyName,
+                    style: const TextStyle(fontSize: 15.5),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  Row phone() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Container phone() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 15,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-                top: 8,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 50,
               ),
-              child: Text(
-                'User Phone',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-              ),
-              child: Text(
-                _phone,
-                style: const TextStyle(fontSize: 15.5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: Text(
+                      'User Phone',
+                      style: GoogleFonts.lato(
+                        color: const Color.fromARGB(255, 31, 40, 51),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    _phone,
+                    style: const TextStyle(fontSize: 15.5),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  Row userId() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Container userId() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 15,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-                top: 8,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 50,
               ),
-              child: Text(
-                'User Id',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-              ),
-              child: Text(
-                FirebaseAuth.instance.currentUser!.uid,
-                style: const TextStyle(fontSize: 15.5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: Text(
+                      'User Id',
+                      style: GoogleFonts.lato(
+                        color: const Color.fromARGB(255, 31, 40, 51),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    FirebaseAuth.instance.currentUser!.uid,
+                    style: const TextStyle(fontSize: 15.5),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  Row nameAndSurname() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Container nameAndSurname() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-                top: 40,
-              ),
-              child: Text(
-                'User Name',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                  ),
+                  child: Text(
+                    'User Name',
+                    style: GoogleFonts.lato(
+                      color: const Color.fromARGB(255, 31, 40, 51),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
+                Text(
+                  _name,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-              ),
-              child: Text(
-                _name,
-                style: const TextStyle(fontSize: 16),
-              ),
+            const SizedBox(width: 100),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                  ),
+                  child: Text(
+                    'User Surname',
+                    style: GoogleFonts.lato(
+                      color: const Color.fromARGB(255, 31, 40, 51),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  _surname,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
             ),
           ],
         ),
-        const SizedBox(width: 100),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: 8,
-                top: 40,
-              ),
-              child: Text(
-                'User Surname',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: 8,
-              ),
-              child: Text(
-                _surname,
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
-      ],
+      ),
     );
   }
 }

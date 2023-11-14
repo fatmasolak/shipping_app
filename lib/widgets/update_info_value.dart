@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:shipping_app/constants.dart';
 import 'package:shipping_app/enums/info_value.dart';
 
 import 'package:shipping_app/widgets/create_app_bar.dart';
@@ -35,7 +36,11 @@ class _UpdateInfoValueState extends State<UpdateInfoValue> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CreateAppBar(header: 'Update Ad', isShowing: false),
+      appBar: const CreateAppBar(
+        header: 'Update Ad',
+        isShowing: false,
+        color: primaryColor,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: Center(

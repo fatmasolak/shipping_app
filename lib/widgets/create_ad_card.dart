@@ -26,6 +26,7 @@ class _CreateAdCardState extends State<CreateAdCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
       child: Column(
         children: [
           adDepartureAndArrival(),

@@ -383,7 +383,6 @@ class _AuthScreenState extends State<AuthScreen> {
               //to set border radius to button
               borderRadius: BorderRadius.circular(29),
             ),
-            foregroundColor: Colors.black,
             backgroundColor: thirdColor,
           ),
           child: Text(

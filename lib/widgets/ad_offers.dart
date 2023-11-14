@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shipping_app/constants.dart';
 import 'package:shipping_app/models/offer.dart';
 import 'package:shipping_app/screens/driver_screens/offer_details.dart';
 
@@ -44,6 +45,7 @@ class _AdOffersState extends State<AdOffers> {
                     });
                   },
                   child: Card(
+                    color: primaryLightColor,
                     child: Column(
                       children: [
                         driverInformations(index),
@@ -81,7 +83,7 @@ class _AdOffersState extends State<AdOffers> {
           child: Text(
             'Driver Surname',
             style: GoogleFonts.lato(
-              color: const Color.fromARGB(255, 31, 40, 51),
+              color: Colors.white,
               fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
@@ -91,7 +93,12 @@ class _AdOffersState extends State<AdOffers> {
           padding: const EdgeInsets.only(
             bottom: 8,
           ),
-          child: Text(widget.adOffers[index].driverSurname),
+          child: Text(
+            widget.adOffers[index].driverSurname,
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
         ),
       ],
     );
@@ -109,7 +116,7 @@ class _AdOffersState extends State<AdOffers> {
           child: Text(
             'Driver Name',
             style: GoogleFonts.lato(
-              color: const Color.fromARGB(255, 31, 40, 51),
+              color: Colors.white,
               fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
@@ -119,7 +126,12 @@ class _AdOffersState extends State<AdOffers> {
           padding: const EdgeInsets.only(
             bottom: 8,
           ),
-          child: Text(widget.adOffers[index].driverName),
+          child: Text(
+            widget.adOffers[index].driverName,
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
         ),
       ],
     );

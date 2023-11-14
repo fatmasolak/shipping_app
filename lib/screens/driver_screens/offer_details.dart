@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shipping_app/constants.dart';
 import 'package:shipping_app/models/ad.dart';
 
 import 'package:shipping_app/models/offer.dart';
@@ -145,27 +146,110 @@ class _OfferDetailsState extends State<OfferDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CreateAppBar(header: widget.offer.offerId, isShowing: false),
+      appBar: CreateAppBar(
+        header: widget.offer.offerId,
+        isShowing: false,
+        color: primaryColor,
+      ),
       body: SingleChildScrollView(
-        child: Column(
+        child: Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              driverNameAndSurname(),
+              driverId(),
+              driverPhone(),
+              expireDateOfDriverLicence(),
+              driverLicence(),
+              approveOfferButtons(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding approveOfferButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 25,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          TextButton(
+            onPressed: _cancel,
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                color: thirdColor,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 5,
+              ),
+              shape: RoundedRectangleBorder(
+                //to set border radius to button
+                borderRadius: BorderRadius.circular(29),
+              ),
+              backgroundColor: thirdColor,
+            ),
+            onPressed: _approveOffer,
+            child: const Text(
+              'Approve',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container driverLicence() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 15,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    driverNameAndSurname(),
-                    const SizedBox(height: 40),
-                    driverId(),
-                    const SizedBox(height: 40),
-                    driverPhone(),
-                    const SizedBox(height: 40),
-                    expireDateOfDriverLicence(),
-                    const SizedBox(height: 40),
-                    driverLicence(),
-                    approveOfferButtons(),
-                  ],
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 37,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: Text(
+                      'Driver Licence',
+                      style: GoogleFonts.lato(
+                        color: const Color.fromARGB(255, 31, 40, 51),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      widget.offer.driverLicenceLink,
+                    ),
+                    backgroundColor: const Color.fromARGB(255, 31, 40, 51),
+                    radius: 60,
+                  ),
+                ],
               ),
             ),
           ],
@@ -174,245 +258,193 @@ class _OfferDetailsState extends State<OfferDetails> {
     );
   }
 
-  Row approveOfferButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        TextButton(
-          onPressed: _cancel,
-          child: const Text('Cancel'),
+  Container expireDateOfDriverLicence() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 15,
         ),
-        ElevatedButton(
-          onPressed: _approveOffer,
-          child: const Text('Approve'),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 37,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: Text(
+                      'Expire Date Of Driver licence',
+                      style: GoogleFonts.lato(
+                        color: const Color.fromARGB(255, 31, 40, 51),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    widget.offer.driverExpireDateOfLicence,
+                    style: const TextStyle(fontSize: 15),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  Row driverLicence() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Container driverPhone() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 15,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-                top: 8,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 37,
               ),
-              child: Text(
-                'Driver Licence',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-              ),
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(
-                  widget.offer.driverLicenceLink,
-                ),
-                backgroundColor: const Color.fromARGB(255, 31, 40, 51),
-                radius: 60,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: Text(
+                      'Driver Phone',
+                      style: GoogleFonts.lato(
+                        color: const Color.fromARGB(255, 31, 40, 51),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    widget.offer.driverPhone,
+                    style: const TextStyle(fontSize: 15.5),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  Row expireDateOfDriverLicence() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Container driverId() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 15,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-                top: 8,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 37,
               ),
-              child: Text(
-                'Expire Date Of Driver licence',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-              ),
-              child: Text(
-                widget.offer.driverExpireDateOfLicence,
-                style: const TextStyle(fontSize: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: Text(
+                      'Driver Id',
+                      style: GoogleFonts.lato(
+                        color: const Color.fromARGB(255, 31, 40, 51),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    widget.offer.driverId,
+                    style: const TextStyle(fontSize: 15.5),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  Row driverPhone() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Container driverNameAndSurname() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-                top: 8,
-              ),
-              child: Text(
-                'Driver Phone',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                  ),
+                  child: Text(
+                    'Driver Name',
+                    style: GoogleFonts.lato(
+                      color: const Color.fromARGB(255, 31, 40, 51),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
+                Text(
+                  widget.offer.driverName,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-              ),
-              child: Text(
-                widget.offer.driverPhone,
-                style: const TextStyle(fontSize: 15.5),
-              ),
+            const SizedBox(width: 100),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                  ),
+                  child: Text(
+                    'Driver Surname',
+                    style: GoogleFonts.lato(
+                      color: const Color.fromARGB(255, 31, 40, 51),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  widget.offer.driverSurname,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
             ),
           ],
         ),
-      ],
-    );
-  }
-
-  Row driverId() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-                top: 8,
-              ),
-              child: Text(
-                'Driver Id',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                right: 8,
-                bottom: 8,
-              ),
-              child: Text(
-                widget.offer.driverId,
-                style: const TextStyle(fontSize: 15.5),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Row driverNameAndSurname() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-                top: 40,
-              ),
-              child: Text(
-                'Driver Name',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 25,
-                bottom: 8,
-              ),
-              child: Text(
-                widget.offer.driverName,
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(width: 100),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: 8,
-                top: 40,
-              ),
-              child: Text(
-                'Driver Surname',
-                style: GoogleFonts.lato(
-                  color: const Color.fromARGB(255, 31, 40, 51),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: 8,
-              ),
-              child: Text(
-                widget.offer.driverSurname,
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
-      ],
+      ),
     );
   }
 }

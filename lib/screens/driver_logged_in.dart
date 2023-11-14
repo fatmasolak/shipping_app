@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
+import 'package:shipping_app/constants.dart';
 import 'package:shipping_app/screens/account_info.dart';
 import 'package:shipping_app/screens/driver_screens/approved_offers.dart';
 import 'package:shipping_app/screens/driver_screens/completed_offers.dart';
@@ -36,7 +37,8 @@ class _DriverLoggedInScreenState extends State<DriverLoggedInScreen> {
   Widget build(context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CreateAppBar(header: 'Shipping', isShowing: true),
+      appBar: const CreateAppBar(
+          header: 'Shipping', isShowing: true, color: primaryColor),
       body: StreamBuilder<QuerySnapshot>(
         stream:
             FirebaseFirestore.instance.collection('driverOffers').snapshots(),
@@ -79,9 +81,9 @@ class _DriverLoggedInScreenState extends State<DriverLoggedInScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        backgroundColor: const Color.fromARGB(255, 31, 40, 51),
+        backgroundColor: primaryColor,
         unselectedItemColor: Colors.white,
-        selectedItemColor: const Color.fromARGB(255, 102, 252, 241),
+        selectedItemColor: fourthColor,
         onTap: _onItemTapped,
       ),
     );

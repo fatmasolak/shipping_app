@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shipping_app/constants.dart';
 import 'package:shipping_app/models/ad.dart';
 import 'package:shipping_app/widgets/create_app_bar.dart';
 
@@ -66,139 +67,201 @@ class _CreateAdState extends State<CreateAd> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: const CreateAppBar(header: 'Create New Ad', isShowing: false),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Center(
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  departureField(),
-                  const SizedBox(height: 20),
-                  arrivalField(),
-                  const SizedBox(height: 30),
-                  datesField(context),
-                  const SizedBox(height: 10),
-                  loadContentField(),
-                  const SizedBox(height: 20),
-                  costField(),
-                  const SizedBox(height: 40),
-                  buttonsField(),
-                ],
+      appBar: const CreateAppBar(
+        header: 'Create New Ad',
+        isShowing: false,
+        color: primaryColor,
+      ),
+      body: Container(
+        height: size.height,
+        width: double.infinity,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    departureField(size),
+                    arrivalField(size),
+                    const SizedBox(height: 20),
+                    datesField(context, size),
+                    loadContentField(size),
+                    costField(size),
+                    const SizedBox(height: 40),
+                    buttonsField(size),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
-  Row buttonsField() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        resetButton(),
-        createAdButton(),
-      ],
+  Container buttonsField(Size size) {
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: 25,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          resetButton(size),
+          createAdButton(size),
+        ],
+      ),
     );
   }
 
-  ElevatedButton createAdButton() {
-    return ElevatedButton(
-      onPressed: _isSending ? null : _saveAd,
-      child: _isSending
-          ? const SizedBox(
-              height: 16,
-              width: 16,
-              child: CircularProgressIndicator(),
-            )
-          : const Text('Create Ad'),
+  Container createAdButton(Size size) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: SizedBox(
+        width: size.width * 0.3,
+        height: size.height * 0.05,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 5,
+            ),
+            shape: RoundedRectangleBorder(
+              //to set border radius to button
+              borderRadius: BorderRadius.circular(29),
+            ),
+            backgroundColor: thirdColor,
+          ),
+          onPressed: _isSending ? null : _saveAd,
+          child: _isSending
+              ? const SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(),
+                )
+              : const Text(
+                  'Create Ad',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+        ),
+      ),
     );
   }
 
-  TextButton resetButton() {
+  TextButton resetButton(Size size) {
     return TextButton(
       onPressed: _isSending
           ? null
           : () {
               _formKey.currentState!.reset();
             },
-      child: const Text('Reset'),
-    );
-  }
-
-  TextFormField costField() {
-    return TextFormField(
-      decoration: const InputDecoration(
-        label: Text('Cost'),
-      ),
-      keyboardType: TextInputType.number,
-      validator: (value) {
-        if (value == null ||
-            value.isEmpty ||
-            int.tryParse(value) == null ||
-            int.tryParse(value)! <= 0) {
-          return 'Must be a valid, positive number.';
-        }
-        return null;
-      },
-      onSaved: (value) {
-        _enteredCost = int.parse(value!);
-      },
-    );
-  }
-
-  TextFormField loadContentField() {
-    return TextFormField(
-      style: const TextStyle(color: Color.fromARGB(255, 31, 40, 51)),
-      decoration: const InputDecoration(
-        labelStyle: TextStyle(
-          color: Color.fromARGB(255, 31, 40, 51),
+      child: const Text(
+        'Reset',
+        style: TextStyle(
+          color: thirdColor,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
         ),
-        labelText: 'Load Content',
       ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Please enter content of your load';
-        }
-
-        return null;
-      },
-      onSaved: (value) {
-        _enteredLoadContent = value!;
-      },
     );
   }
 
-  Row datesField(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        departureDateField(context),
-        arrivalDateField(context),
-      ],
+  Container costField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
+      ),
+      child: TextFormField(
+        decoration: const InputDecoration(
+          hintText: 'Cost',
+          focusColor: primaryColor,
+        ),
+        keyboardType: TextInputType.number,
+        validator: (value) {
+          if (value == null ||
+              value.isEmpty ||
+              int.tryParse(value) == null ||
+              int.tryParse(value)! <= 0) {
+            return 'Must be a valid, positive number.';
+          }
+          return null;
+        },
+        onSaved: (value) {
+          _enteredCost = int.parse(value!);
+        },
+      ),
     );
   }
 
-  Expanded arrivalDateField(BuildContext context) {
-    return Expanded(
+  Container loadContentField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
+      ),
+      child: TextFormField(
+        style: const TextStyle(color: Color.fromARGB(255, 31, 40, 51)),
+        decoration: const InputDecoration(
+          hintText: 'Load Content',
+          focusColor: primaryColor,
+        ),
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter content of your load';
+          }
+
+          return null;
+        },
+        onSaved: (value) {
+          _enteredLoadContent = value!;
+        },
+      ),
+    );
+  }
+
+  Container datesField(BuildContext context, Size size) {
+    return Container(
+      width: size.width,
+      margin: const EdgeInsets.symmetric(vertical: 30),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          departureDateField(context, size),
+          arrivalDateField(context, size),
+        ],
+      ),
+    );
+  }
+
+  Container arrivalDateField(BuildContext context, Size size) {
+    return Container(
+      width: size.width * 0.45,
       child: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.only(right: 20),
-            child: Text(
-              'Arrival Date',
-              style: TextStyle(
-                color: Color.fromARGB(255, 31, 40, 51),
-                fontSize: 13.5,
-              ),
+          const Text(
+            'Arrival Date',
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              color: Color.fromARGB(255, 31, 40, 51),
+              fontSize: 13.5,
             ),
           ),
-          const SizedBox(height: 5),
           Row(
             children: [
               TextButton(
@@ -221,20 +284,17 @@ class _CreateAdState extends State<CreateAd> {
                   _pickedArrivalDate == '' ? 'Pick Date' : 'Picked Date:',
                   style: TextStyle(
                     color: _pickedArrivalDate == ''
-                        ? const Color.fromARGB(255, 102, 252, 241)
+                        ? primaryColor
                         : const Color.fromARGB(255, 31, 40, 51),
                     fontSize: 13,
                   ),
                 ),
               ),
-              SizedBox(
-                width: 80,
-                child: Text(
-                  _pickedArrivalDate,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Color.fromARGB(255, 31, 40, 51),
-                  ),
+              Text(
+                _pickedArrivalDate,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Color.fromARGB(255, 31, 40, 51),
                 ),
               ),
             ],
@@ -244,21 +304,20 @@ class _CreateAdState extends State<CreateAd> {
     );
   }
 
-  Expanded departureDateField(BuildContext context) {
-    return Expanded(
+  Container departureDateField(BuildContext context, Size size) {
+    return Container(
+      width: size.width * 0.45,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(right: 20),
-            child: Text(
-              'Departure Date',
-              style: TextStyle(
-                color: Color.fromARGB(255, 31, 40, 51),
-                fontSize: 13.5,
-              ),
+          const Text(
+            'Departure Date',
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              color: Color.fromARGB(255, 31, 40, 51),
+              fontSize: 13.5,
             ),
           ),
-          const SizedBox(height: 5),
           Row(
             children: [
               TextButton(
@@ -281,20 +340,17 @@ class _CreateAdState extends State<CreateAd> {
                   _pickedDepartureDate == '' ? 'Pick Date' : 'Picked Date:',
                   style: TextStyle(
                     color: _pickedDepartureDate == ''
-                        ? const Color.fromARGB(255, 102, 252, 241)
+                        ? primaryColor
                         : const Color.fromARGB(255, 31, 40, 51),
                     fontSize: 13,
                   ),
                 ),
               ),
-              SizedBox(
-                width: 80,
-                child: Text(
-                  _pickedDepartureDate,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Color.fromARGB(255, 31, 40, 51),
-                  ),
+              Text(
+                _pickedDepartureDate,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Color.fromARGB(255, 31, 40, 51),
                 ),
               ),
             ],
@@ -304,47 +360,59 @@ class _CreateAdState extends State<CreateAd> {
     );
   }
 
-  TextFormField arrivalField() {
-    return TextFormField(
-      style: const TextStyle(color: Color.fromARGB(255, 31, 40, 51)),
-      decoration: const InputDecoration(
-        labelStyle: TextStyle(
-          color: Color.fromARGB(255, 31, 40, 51),
-        ),
-        labelText: 'Arrival',
+  Container arrivalField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
       ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Please enter arrival location';
-        }
+      child: TextFormField(
+        style: const TextStyle(color: Color.fromARGB(255, 31, 40, 51)),
+        decoration: const InputDecoration(
+          hintText: 'Arrival',
+          focusColor: primaryColor,
+        ),
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter arrival location';
+          }
 
-        return null;
-      },
-      onSaved: (value) {
-        _enteredArrival = value!;
-      },
+          return null;
+        },
+        onSaved: (value) {
+          _enteredArrival = value!;
+        },
+      ),
     );
   }
 
-  TextFormField departureField() {
-    return TextFormField(
-      style: const TextStyle(color: Color.fromARGB(255, 31, 40, 51)),
-      decoration: const InputDecoration(
-        labelStyle: TextStyle(
-          color: Color.fromARGB(255, 31, 40, 51),
-        ),
-        labelText: 'Departure',
+  Container departureField(Size size) {
+    return Container(
+      width: size.width * 0.99,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 5,
       ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Please enter departure location';
-        }
+      child: TextFormField(
+        style: const TextStyle(color: Color.fromARGB(255, 31, 40, 51)),
+        decoration: const InputDecoration(
+          hintText: 'Departure',
+          focusColor: primaryColor,
+        ),
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Please enter departure location';
+          }
 
-        return null;
-      },
-      onSaved: (value) {
-        _enteredDeparture = value!;
-      },
+          return null;
+        },
+        onSaved: (value) {
+          _enteredDeparture = value!;
+        },
+      ),
     );
   }
 }

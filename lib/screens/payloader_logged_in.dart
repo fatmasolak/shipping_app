@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shipping_app/constants.dart';
 import 'package:shipping_app/models/ad.dart';
 import 'package:shipping_app/screens/account_info.dart';
 import 'package:shipping_app/screens/payloader_screens/approved_ads.dart';
@@ -174,9 +175,14 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CreateAppBar(header: 'Shipping', isShowing: true),
+      appBar: const CreateAppBar(
+        header: 'Shipping',
+        isShowing: true,
+        color: primaryColor,
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream:
             FirebaseFirestore.instance.collection('payloaderAds').snapshots(),
@@ -205,11 +211,10 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
           return _pages.elementAt(_selectedIndex);
         },
       ),
-      floatingActionButton: showButton ? createAdButton() : null,
+      floatingActionButton: showButton ? createAdButton(size) : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: const Color.fromARGB(255, 31, 40, 51),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -229,21 +234,29 @@ class _PayloaderLoggedInState extends State<PayloaderLoggedInScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
+        backgroundColor: primaryColor,
         unselectedItemColor: Colors.white,
-        selectedItemColor: const Color.fromARGB(255, 102, 252, 241),
+        selectedItemColor: fourthColor,
         onTap: _onItemTapped,
       ),
     );
   }
 
-  Padding createAdButton() {
+  Padding createAdButton(Size size) {
     return Padding(
-      padding: const EdgeInsets.all(80.0),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 80,
+      ),
       child: SizedBox(
-        width: 400,
-        height: 50,
+        width: size.width * 0.6,
+        height: size.height * 0.06,
         child: FloatingActionButton(
-          backgroundColor: const Color.fromARGB(255, 31, 40, 51),
+          backgroundColor: primaryColor,
+          shape: RoundedRectangleBorder(
+            //to set border radius to button
+            borderRadius: BorderRadius.circular(29),
+          ),
           onPressed: _addNewAd,
           child: const Text(
             'Create an Ad',

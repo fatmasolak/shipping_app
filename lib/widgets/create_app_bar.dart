@@ -1,13 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shipping_app/constants.dart';
 
 class CreateAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CreateAppBar(
-      {super.key, required this.header, required this.isShowing});
+      {super.key,
+      required this.header,
+      required this.isShowing,
+      required this.color});
 
   final bool isShowing;
   final String header;
+  final Color color;
 
   @override
   Size get preferredSize => const Size.fromHeight(70);
@@ -18,7 +21,7 @@ class CreateAppBar extends StatelessWidget implements PreferredSizeWidget {
       iconTheme: const IconThemeData(
         color: Colors.white, //change your color here
       ),
-      backgroundColor: primaryColor,
+      backgroundColor: color,
       title: Text(
         header,
         style: const TextStyle(
